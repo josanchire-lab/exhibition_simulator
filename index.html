@@ -76,7 +76,9 @@ main{flex:1 1 auto;min-height:0;display:flex;gap:14px;align-items:stretch}
 .ped-tabs button b{width:6px;height:6px;border-radius:50%;background:var(--accent);display:none}
 .ped-tabs button.has b{display:block}
 .ped-tabs button[aria-pressed="true"] b{background:var(--on-accent)}
-.ped-acts{justify-self:end;display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.ped-acts{justify-self:stretch;display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+/* la vuelta a la sala se va al borde derecho, lejos del grupo de archivos */
+.ped-acts #pedPrimary{margin-left:auto}
 .ped-acts .vsep{width:1px;align-self:stretch;background:var(--line);margin:0 4px}
 .btnlike{font-size:12px;font-weight:600;letter-spacing:.05em;background:var(--surface-2);color:var(--fg);
   border:1px solid var(--line);border-radius:6px;padding:8px 15px;cursor:pointer}
@@ -428,7 +430,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
 <div id="app">
   <header>
     <h1>Exhibition simulator</h1>
-    <span class="ref">Version 3.85</span>
+    <span class="ref">Version 3.87</span>
     <button id="bizBtn" type="button" aria-expanded="false" aria-controls="bizBox">Business case</button>
     <div id="bizBox" role="dialog" aria-modal="true" aria-label="Business case" hidden>
       <div class="sheet">
@@ -640,8 +642,8 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
       <label class="btnlike" title="Load a Word file made with Word (A4) after editing it: each block takes back its text">Update from Word<input type="file" id="pedWordIn" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden></label>
       <button type="button" id="pedIdml" title="Every panel as an InDesign file: one page per panel, at real size, each block its own frame">InDesign (IDML)</button>
       <label class="btnlike" title="Load an IDML made with InDesign (IDML) after editing it: each frame's text goes back to its block">Update from IDML<input type="file" id="pedIdmlIn" accept=".idml" hidden></label>
+      <button type="button" id="pedPNG" title="This panel as a picture, at 2 px per millimetre">Panel PNG</button>
       <label class="btnlike">Open file<input type="file" id="pedOpen" accept=".json,application/json" hidden></label>
-      <span class="vsep"></span>
       <button type="button" id="pedPrimary" title="Close the editor and look at this panel in the room">Back to 3D view</button>
       <button type="button" id="pedClose" class="lbclose" aria-label="Close the editor" title="Close (Esc)">&times;</button>
     </div>
@@ -666,7 +668,6 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
         <div class="ped-col">
           <button type="button" id="pedTpl">Start again from a layout</button>
           <button type="button" id="pedCopy">Copy this panel to all</button>
-          <button type="button" id="pedPNG">Download panel PNG</button>
           <button type="button" id="pedClear" class="ped-danger">Clear panel</button>
         </div>
         <label class="check"><input type="checkbox" id="pedGuides" checked> Show guides</label>
