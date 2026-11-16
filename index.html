@@ -420,7 +420,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
 <div id="app">
   <header>
     <h1>Exhibition simulator</h1>
-    <span class="ref">Version 3.83</span>
+    <span class="ref">Version 3.84</span>
     <button id="bizBtn" type="button" aria-expanded="false" aria-controls="bizBox">Business case</button>
     <div id="bizBox" role="dialog" aria-modal="true" aria-label="Business case" hidden>
       <div class="sheet">
@@ -4767,21 +4767,29 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
     });
   }
 
-  if (window.claude && window.claude.use){
-    window.claude.use('downloads').then(function(d){
-      dl = d;
-      if (d){ pngBtn.disabled = false; pngBtn.title = 'Transparent PNG, no floor, labels or arrows'; }
-      else pngSay('Saving a PNG is not available in this view.');
-    }, function(){ pngSay('Saving a PNG is not available in this view.'); });
-  } else {
-    pngSay('Saving a PNG needs the Claude viewer.');
+  // En el visor de Claude la descarga pasa por su API; servida como una página
+  // cualquiera, vale el enlace de toda la vida, así que el botón funciona igual.
+  function webSave(name, bytes){
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([bytes]));
+    a.download = name; document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 0);
   }
+  function pngReady(){
+    pngBtn.disabled = false;
+    pngBtn.title = 'Transparent PNG, no floor, labels or arrows';
+    pngSay('');
+  }
+  if (window.claude && window.claude.use){
+    window.claude.use('downloads').then(function(d){ dl = d; pngReady(); }, pngReady);
+  } else pngReady();
   pngBtn.addEventListener('click', async function(){
-    if (pngBusy || !dl) return;
+    if (pngBusy) return;
     pngBusy = true; pngBtn.disabled = true;
     try {
       var r = await renderPNG();
-      await dl.save({filename:'exhibition-simulator.png', data:r.bytes});
+      if (dl) await dl.save({filename:'exhibition-simulator.png', data:r.bytes});
+      else webSave('exhibition-simulator.png', r.bytes);
       pngSay('Saved ' + r.w + ' × ' + r.h + ' px.');
     } catch (err){
       pngSay(err && err.code === 'declined' ? 'Not saved.' : 'The PNG could not be saved. Try again.');
