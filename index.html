@@ -98,6 +98,14 @@ main{flex:1 1 auto;min-height:0;display:flex;gap:14px;align-items:stretch}
 .ped-sw{display:flex;gap:7px;margin-bottom:12px}
 .ped-sw button{width:30px;height:30px;padding:0;border-radius:50%;border:2px solid var(--line)}
 .ped-sw button[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 2px var(--bg) inset}
+.ped-sw input[type=color]{width:30px;height:30px;padding:0;border-radius:50%;
+  border:2px solid var(--line);background:none;cursor:pointer;
+  -webkit-appearance:none;appearance:none}
+.ped-sw input[type=color]::-webkit-color-swatch-wrapper{padding:0}
+.ped-sw input[type=color]::-webkit-color-swatch{border:none;border-radius:50%}
+.ped-sw input[type=color]::-moz-color-swatch{border:none;border-radius:50%}
+.ped-sw input[type=color][data-on="1"]{border-color:var(--accent);box-shadow:0 0 0 2px var(--bg) inset}
+.ped-sw input[type=color][disabled]{opacity:.5;cursor:default}
 .ped-note{margin:14px 0 0;font-size:11.5px;color:var(--muted);line-height:1.55}
 .ped-note code{color:var(--fg);font-family:inherit}
 .ped-main{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;background:#0a0e12}
@@ -420,7 +428,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
 <div id="app">
   <header>
     <h1>Exhibition simulator</h1>
-    <span class="ref">Version 3.84</span>
+    <span class="ref">Version 3.85</span>
     <button id="bizBtn" type="button" aria-expanded="false" aria-controls="bizBox">Business case</button>
     <div id="bizBox" role="dialog" aria-modal="true" aria-label="Business case" hidden>
       <div class="sheet">
@@ -2126,7 +2134,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
   var MARGIN = 75;                          // the sheet's margin, mm
   // the margins every panel shares; changing them moves the blocks of every page
   var PM = {t:MARGIN, b:MARGIN, l:MARGIN, r:MARGIN};
-  var PED_BG = ['#ffffff', '#efe9dd', '#d7dde3', '#1d2329'];
+  var PED_BG = ['#ffffff', '#1d2329'];   // blanco y oscuro; el resto, a elegir
   var B_CAP = {fam:SANS, w:500, it:false};
   var B_SUBR = {fam:SERIF, w:400, it:true};
   var STY = {
@@ -2382,7 +2390,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
         if (o.type === 'bar') o.color = b.color === 'accent' ? 'accent' : 'ink';
         return o;
       });
-      pages[n] = {kind:p.kind === 'L' ? 'L' : 'M', bg:PED_BG.indexOf(p.bg) >= 0 ? p.bg : '#ffffff',
+      pages[n] = {kind:p.kind === 'L' ? 'L' : 'M', bg:/^#[0-9a-f]{6}$/i.test(p.bg) ? p.bg.toLowerCase() : '#ffffff',
                   blocks:blocks, rev:1};
     });
     return true;
@@ -3143,7 +3151,19 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
   var bgEl = document.getElementById('pedBg');
   bgEl.innerHTML = PED_BG.map(function(c){
     return '<button type="button" data-bg="' + c + '" style="background:' + c + '" aria-label="Background ' + c + '"></button>';
-  }).join('');
+  }).join('') +
+    '<input type="color" id="pedBgPick" value="#ffffff" title="Any other colour" aria-label="Background, any other colour">';
+  // el selector de color: un solo paso de deshacer por elección, aunque se
+  // arrastre por la rueda y el fondo vaya cambiando mientras tanto
+  var bgPick = document.getElementById('pedBgPick'), bgSnapped = false;
+  bgPick.addEventListener('input', function(){
+    var page = curPage();
+    if (!page) return;
+    if (!bgSnapped){ snap(null); bgSnapped = true; }
+    page.bg = bgPick.value;
+    changed(); bgState();
+  });
+  bgPick.addEventListener('change', function(){ bgSnapped = false; });
   bgEl.addEventListener('click', function(e){
     var b = e.target.closest('[data-bg]'), page = curPage();
     if (!b || !page) return;
@@ -3151,11 +3171,14 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
     changed(); bgState();
   });
   function bgState(){
-    var page = curPage();
-    Array.prototype.forEach.call(bgEl.children, function(b){
+    var page = curPage(), cur = (page && page.bg) || '#ffffff';
+    Array.prototype.forEach.call(bgEl.querySelectorAll('[data-bg]'), function(b){
       b.setAttribute('aria-pressed', String(!!page && page.bg === b.dataset.bg));
       b.disabled = !page;
     });
+    bgPick.value = /^#[0-9a-f]{6}$/i.test(cur) ? cur.toLowerCase() : '#ffffff';
+    bgPick.disabled = !page;
+    bgPick.setAttribute('data-on', (page && PED_BG.indexOf(cur) < 0) ? '1' : '0');
   }
   var mgIn = {t:'pmT', b:'pmB', l:'pmL', r:'pmR'}, mgSame = document.getElementById('pmSame');
   function mgFill(){
@@ -3828,17 +3851,26 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
     var keys = validKeys().filter(function(k){ return pages[k]; });
     if (!keys.length) return null;
     var W = 0, H = 0, spreads = [], stories = [], story = 0, rect = 0, order = [];
-    var bgList = PED_BG.map(function(h){
-      return [parseInt(h.substr(1,2),16), parseInt(h.substr(3,2),16), parseInt(h.substr(5,2),16)];
-    });
+    // un color por fondo realmente usado, con su tinta en el paquete
+    var bgCols = [], bgIdx = {};
+    function bgRef(hex){
+      if (!/^#[0-9a-f]{6}$/i.test(hex || '')) return null;
+      hex = hex.toLowerCase();
+      if (hex === '#ffffff') return null;
+      if (!(hex in bgIdx)){
+        bgIdx[hex] = bgCols.length;
+        bgCols.push([parseInt(hex.substr(1,2),16), parseInt(hex.substr(3,2),16), parseInt(hex.substr(5,2),16)]);
+      }
+      return 'Color/exsimBg' + bgIdx[hex];
+    }
     keys.forEach(function(key, n){
       var page = pages[key], k = kindOf(key);
       fitPageTo(page, k);
       var pw = GEO[k].pw, ph = GEO[k].ph, items = '';
       if (!W){ W = pw; H = ph; }
-      var bg = page.bg || 0;
-      if (bg){
-        items += iRect({x:0, y:0, w:pw, h:ph}, key, ++rect, pw, ph, 'Color/exsimBg' + bg, false);
+      var bgc = bgRef(page.bg);
+      if (bgc){
+        items += iRect({x:0, y:0, w:pw, h:ph}, key, ++rect, pw, ph, bgc, false);
       }
       page.blocks.slice().sort(function(a, b){ return (a.y - b.y) || (a.x - b.x); }).forEach(function(b){
         if (!b.k) b.k = newBK();
@@ -3888,7 +3920,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
       {name:'META-INF/metadata.xml', data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n' +
         '<metadata xmlns="urn:oasis:names:tc:opendocument:xmlns:container"/>'},
       {name:'Resources/Fonts.xml', data:iFontsXml()},
-      {name:'Resources/Graphic.xml', data:iGraphicXml(bgList)},
+      {name:'Resources/Graphic.xml', data:iGraphicXml(bgCols)},
       {name:'Resources/Styles.xml', data:iStylesXml()},
       {name:'Resources/Preferences.xml', data:iPrefsXml(W, H)},
       {name:'MasterSpreads/MasterSpread_exMaster.xml', data:master},
