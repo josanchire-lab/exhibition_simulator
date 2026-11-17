@@ -1,8 +1,8 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Exhibition simulator</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400..700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,500;0,600;0,700;1,500;1,700&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -26,7 +26,7 @@
 *{box-sizing:border-box}
 html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--fg);
-  font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-family:"Roboto",system-ui,sans-serif;
   font-size:14px;line-height:1.5;overflow:hidden;
   -webkit-font-smoothing:antialiased}
 #app{height:100%;display:flex;flex-direction:column;
@@ -40,7 +40,7 @@ h1{margin:0;font-family:"Archivo",system-ui,sans-serif;font-weight:800;
   font-stretch:118%;
   font-size:clamp(19px,3.4vw,25px);letter-spacing:0;text-wrap:balance;
   color:var(--accent)}
-.ref{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11.5px;
+.ref{font-family:"Roboto",system-ui,sans-serif;font-size:11.5px;
   color:var(--muted);letter-spacing:.05em}
 
 main{flex:1 1 auto;min-height:0;display:flex;gap:14px;align-items:stretch}
@@ -52,7 +52,7 @@ main{flex:1 1 auto;min-height:0;display:flex;gap:14px;align-items:stretch}
 #stage.dragging{cursor:grabbing}
 #builderBanner{position:absolute;left:50%;top:16px;transform:translate(-50%,-6px);max-width:calc(100% - 32px);
   padding:10px 22px;border-radius:8px;background:rgba(21,26,32,.86);color:var(--accent);
-  border:1px solid var(--accent);font:700 clamp(18px,3.2vw,30px)/1.15 "IBM Plex Mono",ui-monospace,monospace;
+  border:1px solid var(--accent);font:700 clamp(18px,3.2vw,30px)/1.15 "Roboto",system-ui,sans-serif;
   letter-spacing:.06em;text-transform:uppercase;text-align:center;white-space:nowrap;
   pointer-events:none;opacity:0;transition:opacity .2s,transform .2s;backdrop-filter:blur(6px)}
 #builderBanner.on{opacity:1;transform:translate(-50%,0)}
@@ -60,7 +60,7 @@ main{flex:1 1 auto;min-height:0;display:flex;gap:14px;align-items:stretch}
 /* ---- panel editor: a full-window workspace over the simulator ---- */
 #bEditor{display:block;width:100%;margin:0 0 15px}
 #ped{position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;background:var(--bg);
-  color:var(--fg);font-family:"IBM Plex Mono",ui-monospace,monospace}
+  color:var(--fg);font-family:"Roboto",system-ui,sans-serif}
 #ped[hidden]{display:none}
 .ped-top{flex:0 0 auto;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:14px;
   padding:12px max(16px,env(safe-area-inset-right,0px)) 12px max(16px,env(safe-area-inset-left,0px));
@@ -76,15 +76,35 @@ main{flex:1 1 auto;min-height:0;display:flex;gap:14px;align-items:stretch}
 .ped-tabs button b{width:6px;height:6px;border-radius:50%;background:var(--accent);display:none}
 .ped-tabs button.has b{display:block}
 .ped-tabs button[aria-pressed="true"] b{background:var(--on-accent)}
-.ped-acts{justify-self:stretch;display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
-/* la vuelta a la sala se va al borde derecho, lejos del grupo de archivos */
-.ped-acts #pedPrimary{margin-left:auto}
+.ped-acts{grid-column:3;justify-self:end;display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.ped-left{justify-self:start;display:flex;align-items:baseline;gap:16px;min-width:0}
+/* Un solo menú para todo lo que entra y sale, junto al título y con su misma
+   letra, más fina y sin recuadro: una barra de menú de toda la vida. */
+.ped-file{position:relative}
+#pedFileBtn{font-family:"Archivo",system-ui,sans-serif;font-weight:500;font-stretch:118%;
+  font-size:18px;letter-spacing:0;color:var(--fg);background:none;border:0;
+  padding:2px 10px;border-radius:6px}
+#pedFileBtn:hover{background:var(--surface-2)}
+#pedFileBtn[aria-expanded="true"]{background:var(--surface-2);color:var(--fg)}
+/* deshacer y rehacer, en iconos, al final de la barra del pliego */
+.ped-hist{margin-left:auto;display:flex;gap:4px}
+.ped-zoom .ped-hist button{padding:0;width:30px;height:28px;display:grid;place-items:center}
+.ped-hist svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.9;
+  stroke-linecap:round;stroke-linejoin:round}
+.ped-menu{position:absolute;top:calc(100% + 9px);left:0;z-index:70;
+  min-width:232px;display:flex;flex-direction:column;gap:3px;padding:8px;
+  background:rgba(13,18,23,.98);border:1px solid var(--line);border-radius:10px;
+  box-shadow:0 18px 44px rgba(0,0,0,.5)}
+.ped-menu[hidden]{display:none}
+.ped-menu button,.ped-menu .btnlike{display:block;width:100%;text-align:left;
+  padding:9px 12px;border:1px solid transparent;background:none}
+.ped-menu button:hover,.ped-menu .btnlike:hover{background:var(--raise);border-color:var(--raise)}
+.ped-menu hr{border:0;border-top:1px solid var(--line-soft);margin:4px 2px;width:100%}
 .ped-acts .vsep{width:1px;align-self:stretch;background:var(--line);margin:0 4px}
 .btnlike{font-size:12px;font-weight:600;letter-spacing:.05em;background:var(--surface-2);color:var(--fg);
   border:1px solid var(--line);border-radius:6px;padding:8px 15px;cursor:pointer}
 .btnlike:hover{background:var(--raise)}
 .btnlike:focus-within{outline:2px solid var(--accent);outline-offset:2px}
-#pedClose{position:static;width:34px;height:34px}
 .ped-body{flex:1 1 auto;min-height:0;display:flex;gap:0}
 .ped-tools,.ped-insp{flex:0 0 250px;overflow-y:auto;padding:16px;background:var(--surface);
   border-right:1px solid var(--line-soft)}
@@ -108,6 +128,12 @@ main{flex:1 1 auto;min-height:0;display:flex;gap:14px;align-items:stretch}
 .ped-sw input[type=color]::-moz-color-swatch{border:none;border-radius:50%}
 .ped-sw input[type=color][data-on="1"]{border-color:var(--accent);box-shadow:0 0 0 2px var(--bg) inset}
 .ped-sw input[type=color][disabled]{opacity:.5;cursor:default}
+/* la cruz dice que ahí hay más colores; su tinta sigue al color elegido */
+.ped-pick{position:relative;display:inline-flex;flex:0 0 auto}
+.ped-pick::after{content:"+";position:absolute;inset:0;display:grid;place-items:center;
+  font:700 17px "Roboto",system-ui,sans-serif;line-height:1;pointer-events:none;
+  color:var(--pick-ink,#111111)}
+.ped-pick[data-off="1"]::after{opacity:.5}
 .ped-note{margin:14px 0 0;font-size:11.5px;color:var(--muted);line-height:1.55}
 .ped-note code{color:var(--fg);font-family:inherit}
 .ped-main{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;background:#0a0e12}
@@ -115,6 +141,8 @@ main{flex:1 1 auto;min-height:0;display:flex;gap:14px;align-items:stretch}
   border-bottom:1px solid var(--line-soft);font-size:12px;color:var(--muted)}
 .ped-zoom button{padding:5px 10px;font-size:11.5px}
 .ped-zoom span{margin-left:auto}
+.ped-zoom .zoompct{margin-left:6px;min-width:46px;color:var(--muted);
+  font-variant-numeric:tabular-nums}
 #pedScroll{position:relative;flex:1 1 auto;min-height:0;overflow:auto;padding:28px}
 #pedSheet{position:relative;margin:0 auto;box-shadow:0 10px 40px rgba(0,0,0,.55)}
 #pedCv{display:block;touch-action:none}
@@ -141,13 +169,19 @@ main{flex:1 1 auto;min-height:0;display:flex;gap:14px;align-items:stretch}
 .ped-insp .seg{display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
 .ped-insp .seg button{flex:1 1 0;border:0;border-radius:0;padding:7px 0}
 .ped-insp .seg button + button{border-left:1px solid var(--line)}
+#piAlign button{display:grid;place-items:center}
+#piAlign svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;
+  stroke-linecap:round}
 .ped-insp .btns{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:16px}
 .ped-insp .warn{color:#ff6b6b;font-weight:600}
+.ped-insp .meas:empty{display:none}
 .ped-insp .ok{color:var(--accent)}
 .ped-insp .meas{font-size:11.5px;color:var(--muted);margin-top:7px}
 .ped-status{flex:0 0 auto;padding:7px 16px;font-size:11.5px;color:var(--muted);border-top:1px solid var(--line-soft);
   min-height:31px}
 .ped-status .warn{color:#ff6b6b}
+.ped-status:empty{display:none}
+.ped-note:empty{display:none}
 #pedPrimary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 #pedPrimary:hover{background:var(--accent-hi);border-color:var(--accent-hi)}
 .ped-danger:hover{border-color:#ff6b6b;color:#ff6b6b}
@@ -160,6 +194,52 @@ main{flex:1 1 auto;min-height:0;display:flex;gap:14px;align-items:stretch}
 .ped-tools .row4 label{display:block;font-size:10.5px;color:var(--muted);margin-bottom:3px}
 .ped-tools input[type=number]{width:100%;background:var(--surface-2);color:var(--fg);border:1px solid var(--line);
   border-radius:5px;padding:6px 7px;font:inherit;font-size:12px}
+/* el cuerpo y el interlineado, cada uno con su caja y sus mandos, codo con codo */
+.ped-insp .wordrow{position:relative;display:flex;align-items:center;gap:4px}
+.ped-insp .wordrow .ptbox{flex:1 1 auto;min-width:0}
+/* con los botones al lado, las flechitas del navegador sobran y roban sitio */
+.ped-insp .wordrow input[type=number]{appearance:textfield;-moz-appearance:textfield}
+.ped-insp .wordrow input[type=number]::-webkit-outer-spin-button,
+.ped-insp .wordrow input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.ped-insp .iconbtn{flex:0 0 auto;width:27px;height:32px;padding:0;display:grid;
+  place-items:center;border:1px solid var(--line);border-radius:6px;background:var(--surface-2)}
+.ped-insp .iconbtn:hover{background:var(--raise);border-color:var(--raise)}
+.ped-insp .iconbtn svg{width:19px;height:19px;fill:currentColor;stroke:none}
+.ped-insp .iconbtn svg .ln{fill:none;stroke:currentColor;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round}
+.ped-insp .szmenu{position:absolute;left:0;top:calc(100% + 5px);z-index:20;
+  display:flex;flex-direction:column;gap:2px;min-width:86px;max-height:228px;
+  overflow:auto;padding:5px;background:var(--surface);
+  border:1px solid var(--line);border-radius:8px;box-shadow:0 14px 30px rgba(0,0,0,.5)}
+.ped-insp .szmenu[hidden]{display:none}
+.ped-insp .szmenu button{width:100%;text-align:left;padding:6px 9px;border:0;
+  background:none;border-radius:5px;font-variant-numeric:tabular-nums}
+.ped-insp .szmenu button:hover{background:var(--raise)}
+.ped-insp .szmenu button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+.ped-insp .ptbox{cursor:pointer}
+.ped-insp .lhmenu{position:absolute;right:0;top:calc(100% + 5px);z-index:20;
+  display:flex;flex-direction:column;gap:2px;min-width:88px;padding:5px;
+  background:var(--surface);border:1px solid var(--line);border-radius:8px;
+  box-shadow:0 14px 30px rgba(0,0,0,.5)}
+.ped-insp .lhmenu[hidden]{display:none}
+.ped-insp .lhmenu button{width:100%;text-align:left;padding:6px 9px;border:0;
+  background:none;border-radius:5px}
+.ped-insp .lhmenu button:hover{background:var(--raise)}
+.ped-insp .lhmenu button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+/* el interlineado: un solo mando que enseña el valor y abre la lista */
+.ped-insp .lhbtn{flex:1 1 auto;display:flex;align-items:center;gap:7px;width:100%;
+  height:32px;padding:0 9px;border:1px solid var(--line);border-radius:6px;
+  background:var(--surface-2);text-align:left}
+.ped-insp .lhbtn:hover{background:var(--raise);border-color:var(--raise)}
+.ped-insp .lhbtn svg{width:18px;height:18px;flex:0 0 auto;fill:none;stroke:currentColor;
+  stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.ped-insp .lhbtn span{flex:0 0 auto;font-variant-numeric:tabular-nums}
+.ped-insp .pair{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.ped-insp .pair label{display:block;font-size:10.5px;color:var(--muted);margin-bottom:3px}
+.ped-insp .pair .ptbox{margin-top:0}
+.ped-insp .ptbox{position:relative;margin-top:8px}
+.ped-insp .ptbox span{position:absolute;right:11px;top:50%;transform:translateY(-50%);
+  font-size:11px;color:var(--muted);pointer-events:none}
 .ped-insp .numout{display:inline-flex;align-items:center;gap:5px;color:var(--accent);font-weight:600}
 .ped-insp .numout input{width:64px;text-align:right;color:var(--accent);font-weight:600}
 .ped-insp .linkish{margin-top:8px;padding:0;border:0;background:none;color:var(--accent);font-size:11.5px;
@@ -224,7 +304,7 @@ main{flex:1 1 auto;min-height:0;display:flex;gap:14px;align-items:stretch}
 #bizBox ol li{position:relative;padding-left:40px}
 #bizBox ol li::before{counter-increment:biz;content:counter(biz);position:absolute;left:0;top:0;
   width:26px;height:26px;border-radius:50%;display:grid;place-items:center;
-  font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-family:"Roboto",system-ui,sans-serif;
   font-size:14px;font-weight:700;background:var(--accent);color:var(--on-accent)}
 #bizBox h4{margin:2px 0 10px;font-size:14px;font-weight:700;letter-spacing:.09em;
   text-transform:uppercase;color:var(--accent)}
@@ -267,14 +347,14 @@ aside{flex:0 0 330px;display:flex;flex-direction:column;gap:12px;overflow-y:auto
 aside section{flex:none;background:var(--surface);border:1px solid var(--line-soft);
   border-radius:8px;padding:18px;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.035)}
-aside h2{margin:0 0 12px;font-family:"IBM Plex Mono",ui-monospace,monospace;
+aside h2{margin:0 0 12px;font-family:"Roboto",system-ui,sans-serif;
   font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
   color:var(--muted);padding-bottom:8px;border-bottom:1px solid var(--line-soft)}
 aside h2.sub{margin-top:24px}
 .lightreset{margin-top:18px}
 dl{margin:0;display:grid;grid-template-columns:1fr auto;gap:8px 12px;align-items:baseline}
 dt{color:var(--muted);font-size:12.5px}
-dd{margin:0;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12.5px;
+dd{margin:0;font-family:"Roboto",system-ui,sans-serif;font-size:12.5px;
   font-weight:500;font-variant-numeric:tabular-nums;text-align:right}
 dd em{font-style:normal;color:var(--accent)}
 aside p{margin:12px 0 0;font-size:11.5px;color:var(--muted);line-height:1.6}
@@ -287,7 +367,7 @@ aside p{margin:12px 0 0;font-size:11.5px;color:var(--muted);line-height:1.6}
   stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
 .slider .lab{display:flex;justify-content:space-between;align-items:baseline;
   font-size:12.5px;color:var(--muted);margin-bottom:8px;gap:8px}
-.slider output{font-family:"IBM Plex Mono",ui-monospace,monospace;font-weight:600;
+.slider output{font-family:"Roboto",system-ui,sans-serif;font-weight:600;
   font-variant-numeric:tabular-nums;color:var(--accent)}
 input[type=range]{width:100%;accent-color:var(--accent);margin:0;display:block;height:18px}
 input[type=range]:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
@@ -296,7 +376,7 @@ input[type=range]:focus-visible{outline:2px solid var(--accent);outline-offset:4
   border-radius:6px;overflow:hidden}
 .slots button{flex:1 1 0;padding:10px 0;min-width:0;border:0;border-radius:0;
   background:var(--surface-2);color:var(--fg);
-  font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12.5px;font-weight:600}
+  font-family:"Roboto",system-ui,sans-serif;font-size:12.5px;font-weight:600}
 .slots button + button{border-left:1px solid var(--line)}
 .slots button:hover{background:var(--raise)}
 .slots button[data-kind="M"]{background:var(--m);color:var(--m-ink)}
@@ -326,7 +406,7 @@ input[type=range]:focus-visible{outline:2px solid var(--accent);outline-offset:4
   border:1px solid var(--line);background:var(--surface-2);display:block}
 .prow .up{flex:1 1 auto;padding:7px 8px;font-size:11.5px;text-align:center;cursor:pointer;
   background:var(--surface-2);color:var(--fg);border:1px solid var(--line);border-radius:5px;
-  font-family:"IBM Plex Mono",ui-monospace,monospace;font-weight:600;letter-spacing:.05em}
+  font-family:"Roboto",system-ui,sans-serif;font-weight:600;letter-spacing:.05em}
 .prow .up:hover{background:var(--raise)}
 .prow .up:focus-within{outline:2px solid var(--accent);outline-offset:2px}
 .prow .rm{flex:0 0 auto;padding:6px 10px;font-size:13px;line-height:1}
@@ -348,7 +428,7 @@ aside h2.acc{color:var(--accent)}
 .legend li{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted);min-width:0}
 .legend span{min-width:0}
 .legend b{flex:0 0 22px;height:22px;display:grid;place-items:center;border-radius:4px;
-  border:1px solid var(--line);font:600 11.5px "IBM Plex Mono",ui-monospace,monospace}
+  border:1px solid var(--line);font:600 11.5px "Roboto",system-ui,sans-serif}
 .legend .m{background:var(--m);border-color:var(--m);color:var(--m-ink)}
 .legend .l{background:var(--l);border-color:var(--l);color:var(--l-ink)}
 .legend .v{background:var(--v);border-color:var(--v);color:var(--v-ink)}
@@ -359,7 +439,7 @@ aside h2.acc{color:var(--accent)}
 .check input:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 
 .bar{flex:0 0 auto;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-button{font:inherit;font-size:12px;font-family:"IBM Plex Mono",ui-monospace,monospace;
+button{font:inherit;font-size:12px;font-family:"Roboto",system-ui,sans-serif;
   font-weight:600;letter-spacing:.05em;
   background:var(--surface-2);color:var(--fg);border:1px solid var(--line);
   border-radius:6px;padding:8px 15px;cursor:pointer;
@@ -430,7 +510,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
 <div id="app">
   <header>
     <h1>Exhibition simulator</h1>
-    <span class="ref">Version 3.87</span>
+    <span class="ref">Version 4.19</span>
     <button id="bizBtn" type="button" aria-expanded="false" aria-controls="bizBox">Business case</button>
     <div id="bizBox" role="dialog" aria-modal="true" aria-label="Business case" hidden>
       <div class="sheet">
@@ -632,20 +712,25 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
 
 <div id="ped" role="dialog" aria-modal="true" aria-label="Panel editor" hidden>
   <div class="ped-top">
-    <h2>Panel editor</h2>
+    <div class="ped-left">
+      <h2>Panel editor</h2>
+      <div class="ped-file">
+      <button type="button" id="pedFileBtn" aria-expanded="false" aria-controls="pedFileMenu" title="Open, save and export">File</button>
+      <div class="ped-menu" id="pedFileMenu" hidden>
+        <label class="btnlike" title="Open a panel file saved here before">Open file<input type="file" id="pedOpen" accept=".json,application/json" hidden></label>
+        <button type="button" id="pedSave" title="Save every panel's text to a file you can send or open later">Save file</button>
+        <hr>
+        <button type="button" id="pedPNG" title="This panel as a picture, at 2 px per millimetre">Export to PNG</button>
+        <button type="button" id="pedWord" title="The text of every panel in a Word file, A4, panel by panel">Export to Word</button>
+        <button type="button" id="pedIdml" title="Every panel as an InDesign file: one page per panel, at real size, each block its own frame">Export to IDML</button>
+        <hr>
+        <label class="btnlike" title="Load a Word file made with Export to Word after editing it: each block takes back its text">Import from Word<input type="file" id="pedWordIn" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden></label>
+        <label class="btnlike" title="Load an IDML made with Export to IDML after editing it: each frame's text goes back to its block">Import from IDML<input type="file" id="pedIdmlIn" accept=".idml" hidden></label>
+      </div>
+      </div>
+    </div>
     <div class="ped-acts">
-      <button type="button" id="pedUndo" title="Undo (Ctrl+Z)">Undo</button>
-      <button type="button" id="pedRedo" title="Redo (Ctrl+Shift+Z)">Redo</button>
-      <span class="vsep"></span>
-      <button type="button" id="pedSave" title="Save every panel's text to a file you can send or open later">Save file</button>
-      <button type="button" id="pedWord" title="The text of every panel in a Word file, A4, panel by panel">Word (A4)</button>
-      <label class="btnlike" title="Load a Word file made with Word (A4) after editing it: each block takes back its text">Update from Word<input type="file" id="pedWordIn" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden></label>
-      <button type="button" id="pedIdml" title="Every panel as an InDesign file: one page per panel, at real size, each block its own frame">InDesign (IDML)</button>
-      <label class="btnlike" title="Load an IDML made with InDesign (IDML) after editing it: each frame's text goes back to its block">Update from IDML<input type="file" id="pedIdmlIn" accept=".idml" hidden></label>
-      <button type="button" id="pedPNG" title="This panel as a picture, at 2 px per millimetre">Panel PNG</button>
-      <label class="btnlike">Open file<input type="file" id="pedOpen" accept=".json,application/json" hidden></label>
-      <button type="button" id="pedPrimary" title="Close the editor and look at this panel in the room">Back to 3D view</button>
-      <button type="button" id="pedClose" class="lbclose" aria-label="Close the editor" title="Close (Esc)">&times;</button>
+      <button type="button" id="pedPrimary" title="Close the editor and look at this panel in the room (Esc)">Back to 3D view</button>
     </div>
   </div>
   <div class="ped-body">
@@ -663,7 +748,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
         </div>
       </section>
       <section>
-        <h3>Panel</h3>
+        <h3>Panel settings</h3>
         <div class="ped-sw" id="pedBg"></div>
         <div class="ped-col">
           <button type="button" id="pedTpl">Start again from a layout</button>
@@ -671,11 +756,9 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
           <button type="button" id="pedClear" class="ped-danger">Clear panel</button>
         </div>
         <label class="check"><input type="checkbox" id="pedGuides" checked> Show guides</label>
-        <p class="ped-note">Hatched band: the edge the frame covers. Dashed lines: the margins and the middle. Orange: eye height.</p>
-        <p class="ped-note">In the text, <code>*stars*</code> set bold, <code>_underscores_</code> italic and <code>^carets^</code> small caps.</p>
       </section>
       <section>
-        <h3>Margins, all panels</h3>
+        <h3>Margins</h3>
         <div class="row4 pm">
           <div><label for="pmT">Top</label><input type="number" id="pmT" min="0" max="400" step="5"></div>
           <div><label for="pmB">Bottom</label><input type="number" id="pmB" min="0" max="400" step="5"></div>
@@ -684,7 +767,6 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
         </div>
         <label class="check"><input type="checkbox" id="pmSame" checked> Same on every side</label>
         <p class="ped-note" id="pmNote"></p>
-        <button type="button" id="pmReset" style="width:100%;margin-top:10px">Back to 75 mm</button>
       </section>
     </div>
     <div class="ped-main">
@@ -693,8 +775,11 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
         <span class="zsep"></span>
         <button type="button" data-zoom="fit" aria-pressed="true">Whole panel</button>
         <button type="button" data-zoom="w" aria-pressed="false">Width</button>
-        <button type="button" data-zoom="w2" aria-pressed="false">2&times;</button>
-        <span id="pedSize"></span>
+        <span class="zoompct" id="pedZoomPct" title="Ctrl and the wheel, pinch on a trackpad, or + and - on the keyboard"></span>
+        <div class="ped-hist">
+          <button type="button" id="pedUndo" title="Undo (Ctrl+Z)" aria-label="Undo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 14.5 4 9l5.5-5.5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg></button>
+          <button type="button" id="pedRedo" title="Redo (Ctrl+Shift+Z)" aria-label="Redo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 14.5 20 9l-5.5-5.5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg></button>
+        </div>
       </div>
       <div id="pedScroll">
         <div id="pedSheet"><canvas id="pedCv"></canvas><div id="pedInline" contenteditable="plaintext-only" spellcheck="true" hidden></div></div>
@@ -901,10 +986,10 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
     // alineados a la izquierda, como las cotas del suelo
     x.textAlign = 'left'; x.textBaseline = 'middle';
     x.fillStyle = '#f2f6fa';
-    x.font = '700 118px "IBM Plex Mono", ui-monospace, monospace';
+    x.font = '700 118px "Roboto", system-ui, sans-serif';
     x.fillText(String(n), 30, 95);
     x.fillStyle = '#9fadb9';
-    x.font = '500 32px "IBM Plex Mono", ui-monospace, monospace';
+    x.font = '500 32px "Roboto", system-ui, sans-serif';
     x.fillText(sub, 30, 180);
     // la pastilla del tipo, con el color que ese tipo tiene en la leyenda
     if (kind){
@@ -912,7 +997,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
       x.fillStyle = css('--' + kk) || '#39ff14';
       x.fillRect(bx, by, S, S);
       x.fillStyle = css('--' + kk + '-ink') || '#04210a';
-      x.font = '700 54px "IBM Plex Mono", ui-monospace, monospace';
+      x.font = '700 54px "Roboto", system-ui, sans-serif';
       x.textAlign = 'center';
       x.fillText(kind, bx + S/2, by + S/2 + 2);
       x.textAlign = 'left';
@@ -960,10 +1045,10 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
     // el rótulo encima y la cifra debajo, los dos alineados a la izquierda
     x.textAlign = 'left'; x.textBaseline = 'middle';
     x.fillStyle = '#9fadb9';
-    x.font = 'small-caps 600 44px "IBM Plex Mono", ui-monospace, monospace';
+    x.font = 'small-caps 600 44px "Roboto", system-ui, sans-serif';
     x.fillText(sub, 30, 48);
     x.fillStyle = '#f2f6fa';
-    x.font = '700 70px "IBM Plex Mono", ui-monospace, monospace';
+    x.font = '700 70px "Roboto", system-ui, sans-serif';
     x.fillText(main, 30, 116);
     return new THREE.CanvasTexture(c);
   }
@@ -1189,8 +1274,10 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
         var bits = r.t.split(/(\s+)/);
         for (var z=0;z<bits.length;z++) if (bits[z] !== '') parts.push({t:bits[z], r:r});
       });
-      function close(){
+      // la última línea de un párrafo se marca: justificada, no se estira
+      function close(last){
         while (cur.length && /^\s+$/.test(cur[cur.length-1].t)) cur.pop();
+        if (last) cur.last = true;
         lines.push(cur); cur = []; w = 0;
       }
       for (var m=0;m<parts.length;m++){
@@ -1204,7 +1291,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
         if (w + pw > maxW && cur.length) close();
         cur.push({t:pc.t, r:pc.r, w:pw}); w += pw;
       }
-      close();
+      close(true);
     });
     return lines;
   }
@@ -2229,15 +2316,21 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
       var seg = L.lines.slice(c*L.per, (c+1)*L.per);
       var x0 = (b.x + c*(L.colW + GUT))*REF, y0 = b.y*REF + L.px*ASC;
       for (var j=0; j<seg.length; j++){
-        var ln = seg[j], lw = 0, q;
-        for (q=0;q<ln.length;q++) lw += ln[q].w;
-        var cx = x0;
-        if (al === 'center') cx += (L.colW*REF - lw)/2;
-        else if (al === 'right') cx += L.colW*REF - lw;
+        var ln = seg[j], lw = 0, q, gaps = 0;
+        for (q=0;q<ln.length;q++){
+          lw += ln[q].w;
+          if (/^\s+$/.test(ln[q].t)) gaps++;
+        }
+        var cx = x0, add = 0, colPx = L.colW*REF;
+        // justificar es repartir lo que falta entre los blancos de la línea,
+        // salvo en la que cierra el párrafo, que se queda corta como debe
+        if (al === 'justify' && gaps && !ln.last && lw < colPx) add = (colPx - lw)/gaps;
+        else if (al === 'center') cx += (colPx - lw)/2;
+        else if (al === 'right') cx += colPx - lw;
         for (q=0;q<ln.length;q++){
           x.font = fontOf(baseOf(b), L.px, ln[q].r);
           x.fillText(ln[q].t, cx, y0 + j*L.lead);
-          cx += ln[q].w;
+          cx += ln[q].w + (add && /^\s+$/.test(ln[q].t) ? add : 0);
         }
       }
     }
@@ -2528,7 +2621,9 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
     var r = scrollEl.getBoundingClientRect();
     var fit = Math.max(0.05, Math.min((r.height - 56)/GEO[k].ph, (r.width - 56)/GEO[k].pw));
     var wide = Math.max(0.05, (r.width - 72)/GEO[k].pw);
-    ped.scale = ped.zoom === 'w' ? Math.max(fit, wide) : ped.zoom === 'w2' ? Math.max(fit, wide)*2 : fit;
+    ped.scale = ped.zoom === 'w' ? Math.max(fit, wide)
+              : ped.zoom === 'free' ? Math.max(0.02, ped.free || fit) : fit;
+    ped.fit = fit;
     var w = Math.round(GEO[k].pw*ped.scale), h = Math.round(GEO[k].ph*ped.scale);
     var dpr = Math.min(devicePixelRatio || 1, 2);
     // the backing store stays under the size phones accept for a canvas
@@ -2537,6 +2632,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
     cv.style.width = w + 'px'; cv.style.height = h + 'px';
     sheetEl.style.width = w + 'px';
     ped.dpr = dpr;
+    zoomPct();
   }
   function drawEd(){
     if (!ped.open) return;
@@ -2564,12 +2660,6 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
       x.strokeRect(PM.l*s + .5, PM.t*s + .5, (pw - PM.l - PM.r)*s - 1, (ph - PM.t - PM.b)*s - 1);
       x.beginPath(); x.moveTo(pw*s/2 + .5, 0); x.lineTo(pw*s/2 + .5, ph*s); x.stroke();
       x.setLineDash([]);
-      var ey = eyeFromTop(k)*s;
-      x.strokeStyle = css('--eye') || '#ff7a00'; x.lineWidth = 1.5;
-      x.beginPath(); x.moveTo(0, ey); x.lineTo(pw*s, ey); x.stroke();
-      x.fillStyle = css('--eye') || '#ff7a00';
-      x.font = '600 11px "IBM Plex Mono", ui-monospace, monospace';
-      x.fillText('eye ' + (eyeLineH/1000).toFixed(1) + ' m', pw*s - 86, ey - 5);
       x.restore();
     }
     // blocks: a thin outline for each, the selection with handles, spills in red
@@ -2583,7 +2673,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
         x.strokeStyle = '#e8333a'; x.lineWidth = 2; x.setLineDash([6, 4]);
         x.strokeRect(bx, by, bw, bh); x.setLineDash([]);
         var tag = '+' + ov + (ov === 1 ? ' line' : ' lines') + ' cut';
-        x.font = '700 11px "IBM Plex Mono", ui-monospace, monospace';
+        x.font = '700 11px "Roboto", system-ui, sans-serif';
         var tw = x.measureText(tag).width + 12;
         x.fillStyle = '#e8333a'; x.fillRect(bx + bw - tw, by + bh, tw, 18);
         x.fillStyle = '#fff'; x.fillText(tag, bx + bw - tw + 6, by + bh + 13);
@@ -2626,10 +2716,9 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
       for (var id in ped.over) if (ped.over[id]){ n++; lines += ped.over[id]; }
       t = n ? '<span class="warn">' + n + (n === 1 ? ' block runs' : ' blocks run') + ' past its box: ' +
               lines + (lines === 1 ? ' line is' : ' lines are') + ' cut on the plate.</span>'
-            : 'Everything fits.';
+            : '';          // si todo cabe, la barra se calla
     }
     if (storeFull) t += ' <span class="warn">Too large to keep in this browser; use Save file.</span>';
-    else if (Object.keys(pages).length) t += ' Kept in this browser as you go.';
     statusEl.innerHTML = t;
   }
 
@@ -2705,8 +2794,13 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
     if (isText(b)){
       h += typoHTML(b, st) +
         '<div class="sublabel">Alignment</div><div class="seg" style="margin-top:8px" id="piAlign">' +
-        ['left', 'center', 'right'].map(function(a){
-          return '<button type="button" data-al="' + a + '" aria-pressed="' + ((b.align || 'left') === a) + '">' + a.charAt(0).toUpperCase() + a.slice(1) + '</button>';
+        [['left', 'Left', 'M4 6h16M4 10.5h10M4 15h16M4 19.5h10'],
+         ['center', 'Centre', 'M4 6h16M7 10.5h10M4 15h16M7 19.5h10'],
+         ['right', 'Right', 'M4 6h16M10 10.5h10M4 15h16M10 19.5h10'],
+         ['justify', 'Justified', 'M4 6h16M4 10.5h16M4 15h16M4 19.5h16']].map(function(a){
+          return '<button type="button" data-al="' + a[0] + '" title="' + a[1] + '" aria-label="' + a[1] +
+                 '" aria-pressed="' + ((b.align || 'left') === a[0]) + '">' +
+                 '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + a[2] + '"/></svg></button>';
         }).join('') + '</div>';
       if (b.type === 'body'){
         h += '<div class="sublabel">Columns</div><div class="seg" style="margin-top:8px" id="piCols">' +
@@ -2724,12 +2818,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
         '<button type="button" data-color="ink" aria-pressed="' + (b.color !== 'accent') + '">Text colour</button>' +
         '<button type="button" data-color="accent" aria-pressed="' + (b.color === 'accent') + '">Accent</button></div>';
     }
-    h += '<div class="grp2"><div class="sublabel" style="margin-top:0">Position and size, mm</div><div class="row4" style="margin-top:8px">' +
-      ['x', 'y', 'w', 'h'].map(function(q){
-        return '<div><label for="pi_' + q + '">' + {x:'Left', y:'Top', w:'Width', h:'Height'}[q] + '</label>' +
-               '<input type="number" id="pi_' + q + '" data-geo="' + q + '" step="5" value="' + Math.round(b[q]) + '"></div>';
-      }).join('') + '</div></div>' +
-      '<div class="btns">' + (isText(b) ? '<button type="button" id="piFitH">Fit box to text</button>' : '<span></span>') +
+    h += '<div class="btns">' + (isText(b) ? '<button type="button" id="piFitH">Fit box to text</button>' : '<span></span>') +
       '<button type="button" id="piFull">Full width</button>' +
       '<button type="button" id="piFront">Bring to front</button><button type="button" id="piBack">Send to back</button>' +
       '<button type="button" id="piDup">Duplicate</button><button type="button" id="piDel" class="ped-danger">Delete</button></div>';
@@ -2738,6 +2827,9 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
   }
   function typoHTML(b, st){
     var f = fontSet(b), lf = leadOf(b)/(b.pt*PTMM);
+    var lo = st.min || 8, hi = st.max || 600;
+    var sizes = SIZES.filter(function(v){ return v >= lo && v <= hi; });
+    if (sizes.indexOf(b.pt) < 0) sizes = sizes.concat([b.pt]).sort(function(a, c){ return a - c; });
     return '<div class="sublabel">Font</div><div class="seg" style="margin-top:8px" id="piFam">' +
       '<button type="button" data-fam="sans" aria-pressed="' + (f.fam === 'sans') + '" style="font-family:' + SANS.replace(/"/g, '') + ';letter-spacing:0;font-size:13.5px">Source Sans</button>' +
       '<button type="button" data-fam="serif" aria-pressed="' + (f.fam === 'serif') + '" style="font-family:' + SERIF.replace(/"/g, '') + ';letter-spacing:0;font-size:13.5px">Source Serif</button></div>' +
@@ -2745,14 +2837,39 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
       '<button type="button" data-sty="regular" aria-pressed="' + (!f.bold && !f.ital) + '">Regular</button>' +
       '<button type="button" data-sty="bold" aria-pressed="' + f.bold + '" style="font-weight:700">Bold</button>' +
       '<button type="button" data-sty="italic" aria-pressed="' + f.ital + '" style="font-style:italic">Italic</button></div>' +
-      '<div class="slider"><div class="lab"><label for="piPt">Size</label>' +
-      '<span class="numout"><input type="number" id="piPtN" min="8" max="600" step="1" value="' + b.pt + '" aria-label="Size in points"> pt</span></div>' +
-      '<input type="range" id="piPt" min="' + Math.min(st.min, b.pt) + '" max="' + Math.max(st.max, b.pt) + '" step="1" value="' + b.pt + '"></div>' +
-      '<div class="slider"><div class="lab"><label for="piLh">Line spacing</label><output id="piLhOut">' + lhText(b) + '</output></div>' +
-      '<input type="range" id="piLh" min="0.8" max="2.4" step="0.01" value="' + lf.toFixed(2) + '"></div>' +
-      '<div class="meas" id="piMeas"></div>' +
-      (b.lh ? '<button type="button" id="piLhReset" class="linkish">Back to the usual spacing</button>' : '');
+      '<div class="pair">' +
+      '<div><label for="piPtN">Size</label><div class="wordrow">' +
+      '<div class="ptbox"><input type="number" id="piPtN" min="8" max="600" step="1" value="' + b.pt + '" aria-label="Size in points"></div>' +
+      '<button type="button" id="piPtUp" class="iconbtn" title="Grow the text" aria-label="Grow the text">' + ICO_UP + '</button>' +
+      '<button type="button" id="piPtDn" class="iconbtn" title="Shrink the text" aria-label="Shrink the text">' + ICO_DN + '</button>' +
+      '<div class="szmenu" id="piPtList" hidden>' + sizes.map(function(v){
+        return '<button type="button" data-pt="' + v + '" aria-pressed="' + (v === b.pt) + '">' + v + '</button>';
+      }).join('') + '</div>' +
+      '</div></div>' +
+      '<div><label>Line spacing</label><div class="wordrow">' +
+      '<button type="button" id="piLhMenu" class="lhbtn" aria-expanded="false" title="Line spacing">' +
+      '<span>' + fmt(lf, 2) + '×</span>' + ICO_LH + '</button>' +
+      '<div class="lhmenu" id="piLhList" hidden>' +
+      ['1.0', '1.15', '1.25', '1.5', '1.75', '2.0'].map(function(v){
+        return '<button type="button" data-lh="' + parseFloat(v) + '" aria-pressed="' +
+               (Math.abs(parseFloat(v) - lf) < 0.005) + '">' + v + '</button>';
+      }).join('') +
+      '<button type="button" data-lh="auto" aria-pressed="' + !b.lh + '">Usual</button>' +
+      '</div></div></div></div>' +
+      '';
   }
+  // Los mandos de cuerpo e interlineado, al modo de un procesador de textos:
+  // la A que crece, la A que mengua y las rayas con la flecha. Dibujados aquí,
+  // no copiados de nadie: son los gestos de siempre, no los iconos de otro.
+  // la escalera de cuerpos que ofrece la lista, recortada a lo que cada tipo
+  // de bloque admite; el valor en uso entra siempre, aunque se haya escrito
+  var SIZES = [16, 20, 24, 30, 36, 45, 54, 62, 72, 90, 110, 140, 170, 200, 250, 300];
+  var ICO_UP = '<svg viewBox="0 0 24 24" aria-hidden="true"><text x="0" y="19" font-size="18" font-weight="700">A</text>' +
+    '<path class="ln" d="M19 10V4M16.6 6.4 19 4l2.4 2.4"/></svg>';
+  var ICO_DN = '<svg viewBox="0 0 24 24" aria-hidden="true"><text x="2" y="19" font-size="13" font-weight="700">A</text>' +
+    '<path class="ln" d="M19 4v6M16.6 7.6 19 10l2.4-2.4"/></svg>';
+  var ICO_LH = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5h11M10 12h11M10 19h11' +
+    'M4.5 4.6v14.8M2.3 6.8 4.5 4.6l2.2 2.2M2.3 17.2l2.2 2.2 2.2-2.2"/></svg>';
   function lhText(b){ return fmt(leadOf(b)/(b.pt*PTMM), 2) + '\u00d7 \u00b7 ' + fmt(leadOf(b), 1) + ' mm'; }
   function measNote(){
     var b = selBlock();
@@ -2764,7 +2881,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
     if (f){
       var ov = ped.over[b.id];
       f.innerHTML = ov ? '<span class="warn">' + ov + (ov === 1 ? ' line runs' : ' lines run') + ' past the box and ' + (ov === 1 ? 'is' : 'are') + ' cut.</span>'
-                       : '<span class="ok">The text fits.</span>';
+                       : '';   // si cabe, no hay nada que decir
     }
   }
   function syncGeo(){
@@ -2809,8 +2926,10 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
       if (lr) lr.value = (leadOf(b)/(b.pt*PTMM)).toFixed(2);
       changed();
     } else if (t.id === 'piLh'){
+      var lhv = parseFloat(t.value);
+      if (isNaN(lhv) || lhv < 0.5 || lhv > 4) return;   // a medio escribir, se espera
       snap('lh' + b.id);
-      b.lh = parseFloat(t.value);
+      b.lh = lhv;
       changed();
     } else if (t.dataset.geo){
       var v = parseFloat(t.value);
@@ -2821,11 +2940,53 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
       changed();
     }
   });
+  // la caja del cuerpo abre su lista al pulsarla, y se cierra al elegir o al
+  // pulsar fuera; escribir el valor a mano sigue funcionando igual
+  inspEl.addEventListener('click', function(e){
+    var list = document.getElementById('piPtList');
+    if (!list) return;
+    if (e.target.closest('#piPtN')) list.hidden = false;
+    else if (!e.target.closest('#piPtList')) list.hidden = true;
+  });
+  document.addEventListener('click', function(e){
+    var list = document.getElementById('piPtList');
+    if (list && !list.hidden && !e.target.closest('#piPtList') && !e.target.closest('#piPtN')) list.hidden = true;
+  });
   inspEl.addEventListener('click', function(e){
     var b = selBlock(), t = e.target.closest('button');
     if (!b || !t) return;
     var page = curPage(), k = kindOf(ped.key), idx = page.blocks.indexOf(b);
     if (t.id === 'piImg'){ imgIn.click(); return; }
+    if (t.id === 'piPtUp' || t.id === 'piPtDn'){
+      // suben y bajan por la misma escalera que enseña la lista
+      var up = t.id === 'piPtUp', cur = b.pt, np = null, iz;
+      if (up){ for (iz=0; iz<SIZES.length; iz++) if (SIZES[iz] > cur + 0.01){ np = SIZES[iz]; break; } }
+      else { for (iz=SIZES.length-1; iz>=0; iz--) if (SIZES[iz] < cur - 0.01){ np = SIZES[iz]; break; } }
+      if (np == null) np = Math.min(600, Math.max(8, cur + (up ? 10 : -10)));
+      if (np === cur) return;
+      snap('pt' + b.id);
+      b.pt = np;
+      changed(null, true);
+      return;
+    }
+    if (t.dataset.pt){
+      snap('pt' + b.id);
+      b.pt = parseFloat(t.dataset.pt);
+      changed(null, true);
+      return;
+    }
+    if (t.id === 'piLhMenu'){
+      var lm = document.getElementById('piLhList');
+      if (lm){ lm.hidden = !lm.hidden; t.setAttribute('aria-expanded', String(!lm.hidden)); }
+      return;
+    }
+    if (t.dataset.lh){
+      snap('lh' + b.id);
+      if (t.dataset.lh === 'auto') delete b.lh;      // la de la casa, según el tipo de bloque
+      else b.lh = parseFloat(t.dataset.lh);
+      changed(null, true);
+      return;
+    }
     if (t.dataset.al){ snap(null); b.align = t.dataset.al; changed(null, true); return; }
     if (t.dataset.fam || t.dataset.sty){
       snap(null);
@@ -3037,7 +3198,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
   function guidesFor(k){
     var pw = GEO[k].pw, ph = GEO[k].ph, ins = inset(k);
     var xs = [0, ins.x, PM.l, pw/2, pw - PM.r, pw - ins.x, pw];
-    var ys = [0, ins.y, PM.t, ph - PM.b, ph - ins.y, ph, eyeFromTop(k)];
+    var ys = [0, ins.y, PM.t, ph - PM.b, ph - ins.y, ph];
     curPage().blocks.forEach(function(b){
       if (b.id === ped.sel) return;
       xs.push(b.x, b.x + b.w); ys.push(b.y, b.y + b.h);
@@ -3119,6 +3280,25 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
     else if (isText(b)) startEdit(b);
   });
 
+  // ---- el menú File ----
+  var fileBtn = document.getElementById('pedFileBtn'), fileMenu = document.getElementById('pedFileMenu');
+  function setFileMenu(on){
+    fileMenu.hidden = !on;
+    fileBtn.setAttribute('aria-expanded', String(on));
+  }
+  fileBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    setFileMenu(fileMenu.hidden);
+  });
+  // elegida una opción, el menú se cierra, pero después: cerrarlo en el mismo
+  // clic le quitaría la etiqueta de debajo al diálogo de archivos
+  fileMenu.addEventListener('click', function(){
+    setTimeout(function(){ setFileMenu(false); }, 0);
+  });
+  document.addEventListener('click', function(e){
+    if (!fileMenu.hidden && !fileMenu.contains(e.target) && e.target !== fileBtn) setFileMenu(false);
+  });
+
   // ---- keys ----
   document.addEventListener('keydown', function(e){
     if (!ped.open) return;
@@ -3126,6 +3306,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
     var mod = e.metaKey || e.ctrlKey;
     if (e.key === 'Escape'){
       e.preventDefault(); e.stopPropagation();
+      if (!fileMenu.hidden){ setFileMenu(false); return; }
       if (ped.editing){ stopEdit(true); return; }
       if (typing){ t.blur(); return; }
       if (ped.sel != null){ ped.sel = null; drawEd(); renderInsp(); return; }
@@ -3138,6 +3319,11 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
       return;
     }
     if (mod && (e.key === 'y') && !typing){ e.preventDefault(); restore(redoS, undoS); return; }
+    if (!typing && !ped.editing){
+      if (e.key === '+' || e.key === '='){ e.preventDefault(); zoomBy(1.25); return; }
+      if (e.key === '-' || e.key === '_'){ e.preventDefault(); zoomBy(0.8); return; }
+      if (e.key === '0'){ e.preventDefault(); setZoom('fit'); return; }
+    }
     if (typing) return;
     var b = selBlock();
     if (!b) return;
@@ -3153,7 +3339,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
   bgEl.innerHTML = PED_BG.map(function(c){
     return '<button type="button" data-bg="' + c + '" style="background:' + c + '" aria-label="Background ' + c + '"></button>';
   }).join('') +
-    '<input type="color" id="pedBgPick" value="#ffffff" title="Any other colour" aria-label="Background, any other colour">';
+    '<span class="ped-pick"><input type="color" id="pedBgPick" value="#ffffff" title="Any other colour" aria-label="Background, any other colour"></span>';
   // el selector de color: un solo paso de deshacer por elección, aunque se
   // arrastre por la rueda y el fondo vaya cambiando mientras tanto
   var bgPick = document.getElementById('pedBgPick'), bgSnapped = false;
@@ -3180,6 +3366,8 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
     bgPick.value = /^#[0-9a-f]{6}$/i.test(cur) ? cur.toLowerCase() : '#ffffff';
     bgPick.disabled = !page;
     bgPick.setAttribute('data-on', (page && PED_BG.indexOf(cur) < 0) ? '1' : '0');
+    bgPick.parentNode.style.setProperty('--pick-ink', inkOn(bgPick.value));
+    bgPick.parentNode.setAttribute('data-off', page ? '0' : '1');
   }
   var mgIn = {t:'pmT', b:'pmB', l:'pmL', r:'pmR'}, mgSame = document.getElementById('pmSame');
   function mgFill(){
@@ -3187,7 +3375,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
     var k = 'M', ins = inset(k), lo = Math.min(PM.t, PM.b, PM.l, PM.r);
     document.getElementById('pmNote').innerHTML = lo < Math.min(ins.x, ins.y)
       ? '<span style="color:#ff6b6b">Under ' + Math.round(Math.min(ins.x, ins.y)) + ' mm the frame covers part of the margin.</span>'
-      : 'Moves the blocks on every panel. Blocks out in a margin keep to it; blocks on the plate edge stay there.';
+      : '';
   }
   function setMargins(n){
     var keys = Object.keys(pages).map(Number);
@@ -3208,9 +3396,6 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
   });
   mgSame.addEventListener('change', function(){
     if (mgSame.checked && !(PM.t === PM.b && PM.b === PM.l && PM.l === PM.r)) setMargins({t:PM.l, b:PM.l, l:PM.l, r:PM.l});
-  });
-  document.getElementById('pmReset').addEventListener('click', function(){
-    setMargins({t:MARGIN, b:MARGIN, l:MARGIN, r:MARGIN}); mgSame.checked = true;
   });
   document.getElementById('pedGuides').addEventListener('change', function(){
     ped.guides = this.checked; drawEd();
@@ -3369,7 +3554,8 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
   var W_FONT = {sans:'Source Sans 3', serif:'Source Serif 4'};
   var W_STYLE = {title:'Title', subtitle:'Subtitle', body:'BodyText', quote:'Quote', caption:'Caption'};
   // one paragraph of panel text: *bold*, _italic_ and ^small caps^ become Word's
-  function wPara(style, text, f){
+  var W_JC = {center:'center', right:'right', justify:'both'};
+  function wPara(style, text, f, al){
     var rp0 = '<w:rFonts w:ascii="' + W_FONT[f.fam] + '" w:hAnsi="' + W_FONT[f.fam] + '"/>' +
               (f.bold ? '<w:b/>' : '') + (f.ital ? '<w:i/>' : '');
     var runs = mkRuns(text).map(function(r){
@@ -3380,7 +3566,8 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
                (seg ? '<w:r><w:rPr>' + rp + '</w:rPr><w:t xml:space="preserve">' + xesc(seg) + '</w:t></w:r>' : '');
       }).join('');
     }).join('');
-    return '<w:p><w:pPr><w:pStyle w:val="' + style + '"/></w:pPr>' + (runs || '<w:r><w:rPr>' + rp0 + '</w:rPr></w:r>') + '</w:p>';
+    return '<w:p><w:pPr><w:pStyle w:val="' + style + '"/>' +
+           (W_JC[al] ? '<w:jc w:val="' + W_JC[al] + '"/>' : '') + '</w:pPr>' + (runs || '<w:r><w:rPr>' + rp0 + '</w:rPr></w:r>') + '</w:p>';
   }
   function wNote(text, red){
     return '<w:p><w:pPr><w:pStyle w:val="PanelNote"/></w:pPr><w:r><w:rPr>' + (red ? '<w:color w:val="C8102E"/>' : '') +
@@ -3413,7 +3600,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
                   (b.type === 'body' && b.cols === 2 ? ', two columns' : '');
         var paras = (b.text || '').split(/\n[ \t]*\n/);
         var block = wNote(tag), inner = '';
-        paras.forEach(function(t){ inner += wPara(W_STYLE[b.type], t.replace(/^\n+|\n+$/g, ''), f); });
+        paras.forEach(function(t){ inner += wPara(W_STYLE[b.type], t.replace(/^\n+|\n+$/g, ''), f, b.align); });
         if (!b.k) b.k = newBK();
         block += '<w:sdt><w:sdtPr><w:alias w:val="' + xesc('Panel ' + keyName(key) + ', ' + STY[b.type].name) + '"/>' +
                  '<w:tag w:val="exsim|' + key + '|' + b.k + '"/><w:id w:val="' + (++sdtId) + '"/><w:lock w:val="sdtLocked"/></w:sdtPr>' +
@@ -3591,7 +3778,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
     stopEdit(true);
     readWord(f).then(function(found){
       if (!found.length){
-        flash('No panel text found in that file. Use a Word file made with the Word (A4) button.', 6000);
+        flash('No panel text found in that file. Use a Word file made with File › Export to Word.', 6000);
         return;
       }
       var changes = [], missing = 0;
@@ -3649,7 +3836,8 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
     return bold && ital ? 'Bold Italic' : bold ? 'Bold' : ital ? 'Italic' : 'Regular';
   }
   function iJust(b){
-    return b.align === 'center' ? 'CenterAlign' : b.align === 'right' ? 'RightAlign' : 'LeftAlign';
+    return b.align === 'center' ? 'CenterAlign' : b.align === 'right' ? 'RightAlign'
+         : b.align === 'justify' ? 'LeftJustified' : 'LeftAlign';
   }
   // one block's text: blank lines part paragraphs, single returns are forced
   // line breaks, and *stars*, _underscores_ and ^carets^ become real styling
@@ -4052,7 +4240,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
     stopEdit(true);
     readIdml(f).then(function(found){
       if (!found.length){
-        flash('No panel text found in that file. Use an IDML made with the InDesign (IDML) button, and keep each frame’s script label.', 7000);
+        flash('No panel text found in that file. Use an IDML made with File › Export to IDML, and keep each frame’s script label.', 7000);
         return;
       }
       var changes = [], missing = 0;
@@ -4097,18 +4285,44 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
     Array.prototype.forEach.call(zoomBtns, function(o){ o.setAttribute('aria-pressed', String(o.dataset.zoom === z)); });
     layoutEd(); drawEd(); if (ped.editing) placeInline();
     scrollEl.scrollTop = fy*scrollEl.scrollHeight - r.height/2;
+    zoomPct();
   }
   Array.prototype.forEach.call(zoomBtns, function(b){
     b.addEventListener('click', function(){ setZoom(b.dataset.zoom); });
   });
+
+  // Zoom libre, además de los dos encuadres: la rueda con Ctrl o Cmd, el
+  // pellizco del trackpad (que llega como rueda con Ctrl) y + - 0 del teclado.
+  // El punto que estás mirando se queda donde está mientras la hoja crece.
+  var pctEl = document.getElementById('pedZoomPct');
+  function zoomPct(){
+    if (pctEl) pctEl.textContent = ped.fit ? Math.round(ped.scale/ped.fit*100) + '%' : '';
+  }
+  function zoomTo(scale, ax, ay){
+    var r = scrollEl.getBoundingClientRect(), fit = ped.fit || 0.1;
+    scale = Math.max(fit*0.6, Math.min(Math.min(1.5, fit*14), scale));
+    if (Math.abs(scale - ped.scale) < 1e-4) return;
+    var cxp = (ax == null ? r.width/2 : ax - r.left), cyp = (ay == null ? r.height/2 : ay - r.top);
+    var px = (scrollEl.scrollLeft + cxp)/ped.scale, py = (scrollEl.scrollTop + cyp)/ped.scale;
+    ped.zoom = 'free'; ped.free = scale;
+    Array.prototype.forEach.call(zoomBtns, function(o){ o.setAttribute('aria-pressed', 'false'); });
+    layoutEd(); drawEd(); if (ped.editing) placeInline();
+    scrollEl.scrollLeft = px*ped.scale - cxp;
+    scrollEl.scrollTop = py*ped.scale - cyp;
+    zoomPct();
+  }
+  function zoomBy(k, ax, ay){ zoomTo(ped.scale*k, ax, ay); }
+  scrollEl.addEventListener('wheel', function(e){
+    if (!(e.ctrlKey || e.metaKey)) return;      // sin Ctrl, la rueda sigue desplazando
+    e.preventDefault();
+    zoomBy(Math.exp(-e.deltaY*0.0035), e.clientX, e.clientY);
+  }, {passive:false});
 
   // ---- open and close ----
   function renderAll(){
     if (validKeys().indexOf(ped.key) < 0) ped.key = validKeys()[0] != null ? validKeys()[0] : -1;
     renderTabs(); renderStart(); bgState(); undoBtns(); mgFill();
     var k = kindOf(ped.key);
-    document.getElementById('pedSize').textContent = (k === 'M' || k === 'L')
-      ? 'Plate ' + keyName(ped.key) + ' · ' + k + ' · ' + fmt(GEO[k].pw) + ' × ' + fmt(GEO[k].ph) + ' mm' : '';
     if (curPage()){ layoutEd(); drawEd(); }
     else statusEl.textContent = '';
     renderInsp();
@@ -4150,7 +4364,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
   }
   var edBtn = document.getElementById('bEditor');
   edBtn.addEventListener('click', function(){ openEd(); });
-  document.getElementById('pedClose').addEventListener('click', function(){ closeEd(false); });
+
   document.getElementById('pedPrimary').addEventListener('click', function(){ closeEd(true); });
   pedEl.addEventListener('pointerdown', function(e){ e.stopPropagation(); });
   window.addEventListener('resize', function(){ if (ped.open){ layoutEd(); drawEd(); if (ped.editing) placeInline(); } });
