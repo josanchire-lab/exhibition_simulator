@@ -2,7 +2,7 @@
 <title>Exhibition simulator</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400..700&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400..700&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,500;0,600;0,700;1,500;1,700&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -20,6 +20,7 @@
   --m:#39ff14; --m-hi:#6dff52; --m-ink:#04210a;
   --l:#ff2cd4; --l-hi:#ff63e0; --l-ink:#2b0023;
   --v:#eaff00; --v-hi:#f3ff5c; --v-ink:#262a00;
+  --s:#00e5ff; --s-hi:#6ef0ff; --s-ink:#002a31;
   --stage-a:#f2f6fa; --stage-b:#dde6ee; --floor:#2e333c; --grid:#3b4350; --grid-hi:#505c6d; --stage-ink:#44525f;
   color-scheme:dark;
 }
@@ -36,9 +37,8 @@ body{margin:0;background:var(--bg);color:var(--fg);
 
 header{position:relative;z-index:20;display:flex;align-items:baseline;gap:14px;
   flex-wrap:wrap;flex:0 0 auto}
-h1{margin:0;font-family:"Archivo",system-ui,sans-serif;font-weight:800;
-  font-stretch:118%;
-  font-size:clamp(19px,3.4vw,25px);letter-spacing:0;text-wrap:balance;
+h1{margin:0;font-family:"Space Grotesk",system-ui,sans-serif;font-weight:700;
+  font-size:clamp(19px,3.4vw,25px);letter-spacing:-.01em;text-wrap:balance;
   color:var(--accent)}
 .ref{font-family:"Roboto",system-ui,sans-serif;font-size:11.5px;
   color:var(--muted);letter-spacing:.05em}
@@ -65,8 +65,8 @@ main{flex:1 1 auto;min-height:0;display:flex;gap:14px;align-items:stretch}
 .ped-top{flex:0 0 auto;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:14px;
   padding:12px max(16px,env(safe-area-inset-right,0px)) 12px max(16px,env(safe-area-inset-left,0px));
   border-bottom:1px solid var(--line)}
-.ped-top h2{margin:0;font-family:"Archivo",system-ui,sans-serif;font-weight:800;font-stretch:118%;
-  font-size:20px;color:var(--accent);letter-spacing:0}
+.ped-top h2{margin:0;font-family:"Space Grotesk",system-ui,sans-serif;font-weight:700;
+  font-size:20px;color:var(--accent);letter-spacing:-.01em}
 .ped-tabs{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;justify-self:center}
 .ped-top h2{justify-self:start}
 .ped-tabs button{padding:6px 11px;display:inline-flex;align-items:center;gap:7px}
@@ -81,8 +81,8 @@ main{flex:1 1 auto;min-height:0;display:flex;gap:14px;align-items:stretch}
 /* Un solo menú para todo lo que entra y sale, junto al título y con su misma
    letra, más fina y sin recuadro: una barra de menú de toda la vida. */
 .ped-file{position:relative}
-#pedFileBtn{font-family:"Archivo",system-ui,sans-serif;font-weight:500;font-stretch:118%;
-  font-size:18px;letter-spacing:0;color:var(--fg);background:none;border:0;
+#pedFileBtn{font-family:"Space Grotesk",system-ui,sans-serif;font-weight:500;
+  font-size:18px;letter-spacing:-.01em;color:var(--fg);background:none;border:0;
   padding:2px 10px;border-radius:6px}
 #pedFileBtn:hover{background:var(--surface-2)}
 #pedFileBtn[aria-expanded="true"]{background:var(--surface-2);color:var(--fg)}
@@ -298,8 +298,8 @@ main{flex:1 1 auto;min-height:0;display:flex;gap:14px;align-items:stretch}
 #helpBox .sheet > p:last-of-type{margin:20px 0 0;padding-top:16px;
   border-top:1px solid var(--line-soft);color:var(--muted);font-size:14.5px}
 /* el argumentario: titular grande y apartados numerados */
-#bizBox .lead{margin:0 0 18px;font-family:"Archivo",system-ui,sans-serif;font-weight:800;
-  font-stretch:118%;font-size:clamp(21px,2.6vw,27px);line-height:1.2;color:var(--fg)}
+#bizBox .lead{margin:0 0 18px;font-family:"Space Grotesk",system-ui,sans-serif;font-weight:700;
+  font-size:clamp(21px,2.6vw,27px);line-height:1.2;color:var(--fg)}
 #bizBox ol{margin:26px 0 0;padding:0;list-style:none;counter-reset:biz;gap:26px}
 #bizBox ol li{position:relative;padding-left:40px}
 #bizBox ol li::before{counter-increment:biz;content:counter(biz);position:absolute;left:0;top:0;
@@ -385,6 +385,8 @@ input[type=range]:focus-visible{outline:2px solid var(--accent);outline-offset:4
 .slots button[data-kind="L"]:hover{background:var(--l-hi)}
 .slots button[data-kind="V"]{background:var(--v);color:var(--v-ink)}
 .slots button[data-kind="V"]:hover{background:var(--v-hi)}
+.slots button[data-kind="S"]{background:var(--s);color:var(--s-ink)}
+.slots button[data-kind="S"]:hover{background:var(--s-hi)}
 .slots button[disabled],
 .slots button[disabled][data-kind]{background:var(--surface);color:var(--muted);
   opacity:.5;cursor:default}
@@ -432,6 +434,7 @@ aside h2.acc{color:var(--accent)}
 .legend .m{background:var(--m);border-color:var(--m);color:var(--m-ink)}
 .legend .l{background:var(--l);border-color:var(--l);color:var(--l-ink)}
 .legend .v{background:var(--v);border-color:var(--v);color:var(--v-ink)}
+.legend .s{background:var(--s);border-color:var(--s);color:var(--s-ink)}
 
 .check{display:flex;align-items:center;gap:9px;margin-top:15px;cursor:pointer;
   font-size:12.5px;color:var(--fg)}
@@ -510,7 +513,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
 <div id="app">
   <header>
     <h1>Exhibition simulator</h1>
-    <span class="ref">Version 4.20</span>
+    <span class="ref">Version 4.28</span>
     <button id="bizBtn" type="button" aria-expanded="false" aria-controls="bizBox">About</button>
     <div id="bizBox" role="dialog" aria-modal="true" aria-label="About" hidden>
       <div class="sheet">
@@ -588,6 +591,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
           <li><b class="m">M</b><span id="lgM"></span></li>
           <li><b class="l">L</b><span id="lgL"></span></li>
           <li><b class="v">V</b><span>Showcase, a display case on legs</span></li>
+          <li><b class="s">S</b><span id="lgS"></span></li>
         </ul>
         <button id="bBuilder" type="button" aria-pressed="false">Builder mode</button>
       </section>
@@ -603,7 +607,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
         <div class="slider" id="gapRow">
           <div class="lab"><label for="gap"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4v16M20 4v16M9 12h6M9 12l2-2M9 12l2 2M15 12l-2-2M15 12l-2 2"/></svg>Spacing between units</label><output id="gapOut" for="gap"></output></div>
           <input type="range" id="gap" min="0" max="1500" step="10" value="50">
-          <p class="mini" id="gapNote" hidden>Held at 200 mm where a case meets a frame.</p>
+          <p class="mini" id="gapNote" hidden>Held at 200 mm around a screen, and where a case meets a frame.</p>
         </div>
         <div class="slider" id="curveRow" hidden>
           <div class="lab"><label for="curve"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18A10 10 0 0 1 21 18"/><path d="M3 18v2M21 18v2"/></svg>Curve</label><output id="curveOut" for="curve"></output></div>
@@ -640,6 +644,21 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
         <p id="platesNote">Each plate takes its own picture. It is cropped to fill, so the artwork keeps its proportions.</p>
       </section>
 
+
+      <section id="screenSec" hidden>
+        <h2 class="acc">Screen</h2>
+        <dl><dt>Overall size</dt><dd><em id="scrDims"></em></dd></dl>
+        <div class="triple" id="scrSize">
+          <button type="button" data-diag="55" aria-pressed="false">55&Prime;</button>
+          <button type="button" data-diag="65" aria-pressed="true">65&Prime;</button>
+          <button type="button" data-diag="75" aria-pressed="false">75&Prime;</button>
+        </div>
+        <div class="slider">
+          <div class="lab"><label for="scrH">Height off the floor</label><output id="scrHOut" for="scrH"></output></div>
+          <input type="range" id="scrH" min="600" max="1500" step="10" value="1050">
+        </div>
+        <p class="mini" id="scrNote"></p>
+      </section>
 
       <section id="caseSec">
         <h2 class="acc">Showcase</h2>
@@ -744,7 +763,6 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
           <button type="button" data-add="quote">Quote</button>
           <button type="button" data-add="caption">Caption</button>
           <button type="button" data-add="image">Image</button>
-          <button type="button" data-add="bar">Bar</button>
         </div>
       </section>
       <section>
@@ -868,6 +886,27 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
   // the same ground as the frames.
   var CASE = {W:1200, D:600, GH:580, LEG_H:700};
   var CASE_FIX = {T:10, APRON:46, LEG:13, FELT:6};
+  // Pantalla de 65 pulgadas sobre pie. La diagonal de 65\u2033 en 16:9 da
+  // 1.429 \u00d7 804 mm de imagen; con el marco, 1.449 \u00d7 830 mm. El pie la
+  // levanta 1.050 mm del suelo, que es la altura a la que se ve de pie.
+  var SCREEN = {DIAG:65, BOT:1050, BEZ:20, T:70,
+                BASE_W:700, BASE_D:450, BASE_T:30, COL_W:120, COL_D:90};
+  // de la diagonal en pulgadas salen la imagen 16:9 y, con el marco, la carcasa
+  function screenCalc(){
+    var d = SCREEN.DIAG*25.4, k = Math.sqrt(16*16 + 9*9);
+    SCREEN.IMG_W = Math.round(d*16/k);
+    SCREEN.IMG_H = Math.round(d*9/k);
+    SCREEN.W = SCREEN.IMG_W + 2*SCREEN.BEZ;
+    SCREEN.H = SCREEN.IMG_H + 2*SCREEN.BEZ + 6;
+  }
+  screenCalc();
+  function screenHeight(){ return SCREEN.BOT + SCREEN.H; }
+  function screenLegend(){
+    var el = document.getElementById('lgS');
+    if (el) el.textContent = 'Screen, ' + SCREEN.DIAG + '\u2033 on a stand, ' +
+      fmt(SCREEN.W) + ' \u00d7 ' + fmt(screenHeight()) + ' mm';
+  }
+  screenLegend();
   var caseFill = 'none', showGlass = true;
 
   var mBlack = new THREE.MeshStandardMaterial({color:0x231f20, roughness:0.55, metalness:0.15});
@@ -962,6 +1001,82 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
     return g;
   }
 
+  // La pantalla no se queda en negro: pinta una demostración de datos en un
+  // lienzo que se repinta diez veces por segundo y hace de textura. Va también
+  // como emisiva, que es lo que distingue una pantalla encendida de una plancha
+  // negra cuando la sala está a media luz.
+  var vizCv = document.createElement('canvas');
+  vizCv.width = 1024; vizCv.height = 576;
+  var vizTex = new THREE.CanvasTexture(vizCv);
+  var vizLast = 0, vizT0 = 0, hasScreen = false;
+  var mPanel = new THREE.MeshStandardMaterial({color:0xffffff, map:vizTex,
+    emissive:new THREE.Color(0xffffff), emissiveMap:vizTex, emissiveIntensity:0.78,
+    metalness:0.0, roughness:0.38});
+  function vizNum(v){
+    return String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+  function drawViz(t){
+    var x = vizCv.getContext('2d'), W = vizCv.width, H = vizCv.height;
+    var ink = '#e8f1f8', dim = 'rgba(232,241,248,.42)', acc = css('--accent') || '#39ff14';
+    var F = '"Roboto", system-ui, sans-serif';
+    x.fillStyle = '#0a0e13'; x.fillRect(0, 0, W, H);
+    x.fillStyle = 'rgba(232,241,248,.07)'; x.fillRect(0, 0, W, 108);
+    x.textBaseline = 'alphabetic'; x.textAlign = 'left';
+    x.fillStyle = ink; x.font = '600 34px ' + F;
+    x.fillText('Lorem ipsum lorem est', 56, 68);
+    x.fillStyle = dim; x.font = '500 21px ' + F;
+    x.fillText('Dolor sit amet · consectetur', 56, 95);
+    // el punto que late, como el testigo de una señal en directo
+    var pulse = 0.5 + 0.5*Math.sin(t*3.2);
+    x.globalAlpha = 0.3 + 0.7*pulse; x.fillStyle = acc;
+    x.beginPath(); x.arc(W - 150, 60, 10, 0, 6.2832); x.fill();
+    x.globalAlpha = 1;
+    x.fillStyle = dim; x.font = '600 21px ' + F;
+    x.fillText('LIVE', W - 128, 68);
+    // la cifra grande, que respira
+    var val = 12480 + 880*Math.sin(t*0.55) + 230*Math.sin(t*1.7);
+    x.fillStyle = acc; x.font = '700 96px ' + F;
+    x.fillText(vizNum(val), 56, 214);
+    x.fillStyle = dim; x.font = '500 23px ' + F;
+    x.fillText('+' + (4.2 + 1.6*Math.sin(t*0.9)).toFixed(1) + '% on last week', 58, 250);
+    // la línea, que se desliza
+    x.strokeStyle = 'rgba(232,241,248,.8)'; x.lineWidth = 4;
+    x.lineJoin = 'round'; x.beginPath();
+    var LX = 56, LW = W - 112, LY = 330, LA = 44;
+    for (var q=0; q<=120; q++){
+      var u = q/120, px = LX + u*LW;
+      var py = LY - LA*Math.sin(u*6.1 + t*1.25) - LA*0.55*Math.sin(u*3.2 - t*0.8);
+      if (q) x.lineTo(px, py); else x.moveTo(px, py);
+    }
+    x.stroke();
+    // las barras, una por día, con la de hoy encendida
+    var days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'], N = days.length;
+    var pad = 56, gapB = 22, bw = (W - pad*2 - (N-1)*gapB)/N, base = H - 74;
+    for (var i=0; i<N; i++){
+      var wave = 0.5 + 0.5*Math.sin(t*1.15 + i*0.62);
+      var h = 48 + 132*wave*(0.55 + 0.45*Math.abs(Math.sin(i*1.9 + 1)));
+      var bx = pad + i*(bw + gapB);
+      x.fillStyle = (i === N-1) ? acc : 'rgba(57,255,20,.32)';
+      x.fillRect(bx, base - h, bw, h);
+      x.fillStyle = dim; x.font = '500 20px ' + F; x.textAlign = 'center';
+      x.fillText(days[i], bx + bw/2, base + 30);
+      x.textAlign = 'left';
+    }
+    x.strokeStyle = 'rgba(232,241,248,.18)'; x.lineWidth = 2;
+    x.beginPath(); x.moveTo(pad, base + 1); x.lineTo(W - pad, base + 1); x.stroke();
+    vizTex.needsUpdate = true;
+  }
+  function makeScreen(){
+    var S = SCREEN, g = new THREE.Group(), cy = S.BOT + S.H/2;
+    g.add(solid(S.BASE_W, S.BASE_T, S.BASE_D, 0, S.BASE_T/2, 0, mBlack));       // el pie
+    var colH = cy;                                                              // la columna llega al centro
+    // la columna, detrás del monitor: por delante solo se ve la imagen
+    g.add(solid(S.COL_W, colH, S.COL_D, 0, colH/2, -(S.T/2 + S.COL_D/2 - 20), mBlack));
+    g.add(solid(S.W, S.H, S.T, 0, cy, 0, mBlack));                              // la caja del monitor
+    g.add(solid(S.IMG_W, S.IMG_H, 2, 0, cy, S.T/2 + 1, mPanel));                // la imagen, mirando al frente
+    return g;
+  }
+  var screenTemplate = null;
   var caseTemplate = null;
   function disposeDeep(o){
     o.traverse(function(n){ if (n.geometry) n.geometry.dispose(); });
@@ -1006,20 +1121,24 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
   }
   function updateTag(slot){
     var k = slot.kind;
-    if (k !== 'M' && k !== 'L' && k !== 'V'){ slot.tag.visible = false; return; }
+    if (k !== 'M' && k !== 'L' && k !== 'V' && k !== 'S'){ slot.tag.visible = false; return; }
     slot.tag.visible = tagsOn;
-    var isCase = (k === 'V');
-    var key = isCase ? 'V|' + CASE.W + '|' + caseHeight() : k;
+    var isCase = (k === 'V'), isScreen = (k === 'S');
+    var key = isCase ? 'V|' + CASE.W + '|' + caseHeight()
+            : isScreen ? 'S|' + SCREEN.DIAG + '|' + SCREEN.BOT : k;
     if (slot.tagKey !== key){
       if (slot.tagTex) slot.tagTex.dispose();
       slot.tagTex = makeTag(slot.num, isCase
         ? fmt(CASE.W) + ' × ' + fmt(caseHeight()) + ' mm'
+        : isScreen
+        ? SCREEN.DIAG + '\u2033 · ' + fmt(SCREEN.IMG_W) + ' × ' + fmt(SCREEN.IMG_H) + ' mm'
         : fmt(GEO[k].pw) + ' × ' + fmt(GEO[k].ph) + ' mm', k);
       slot.tagMat.map = slot.tagTex;
       slot.tagMat.needsUpdate = true;
       slot.tagKey = key;
     }
-    var topY = isCase ? FLOOR_Y + caseHeight() : GEO[k].box.max.y;
+    var topY = isCase ? FLOOR_Y + caseHeight()
+             : isScreen ? FLOOR_Y + screenHeight() : GEO[k].box.max.y;
     slot.tag.position.set(0, topY + TAG_GAP + TAG_H/2, 0);
   }
 
@@ -1145,6 +1264,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
     var pm = new THREE.Mesh(GEO.M.placa, mats); pm.castShadow = true;
     var pmB = new THREE.Mesh(GEO.M.placaB, matsB); pmB.castShadow = true; pmB.visible = false;
     var holder = new THREE.Group(); holder.visible = false;
+    var screen = new THREE.Group(); screen.visible = false;
     // rótulo flotante: un sprite mira siempre a cámara, así que se lee desde
     // cualquier ángulo y sigue al puesto cuando la fila se curva
     var tagMat = new THREE.SpriteMaterial({transparent:true, depthTest:false, depthWrite:false});
@@ -1154,11 +1274,11 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
     // línea de altura de ojo, una por cara, pegada a la superficie de la placa
     var eyA = new THREE.Mesh(EYE_GEO, eyeMat); eyA.visible = false;
     var eyB = new THREE.Mesh(EYE_GEO, eyeMat); eyB.visible = false;
-    grp.add(fm); grp.add(pm); grp.add(pmB); grp.add(holder); grp.add(tag);
+    grp.add(fm); grp.add(pm); grp.add(pmB); grp.add(holder); grp.add(screen); grp.add(tag);
     grp.add(eyA); grp.add(eyB);
     grp.visible = false;
     scene.add(grp);
-    slots.push({grp:grp, frame:fm, plate:pm, plateB:pmB, holder:holder, kind:null, num:i+1,
+    slots.push({grp:grp, frame:fm, plate:pm, plateB:pmB, holder:holder, screen:screen, kind:null, num:i+1,
                 eyA:eyA, eyB:eyB,
                 matPlain:plain, matImg:imgM, matImgB:imgB, mats:mats, matsB:matsB, tex:null, aspect:1,
                 texB:null, aspectB:1,
@@ -1171,6 +1291,18 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
     while (slot.holder.children.length) slot.holder.remove(slot.holder.children[0]);
     if (caseTemplate) slot.holder.add(caseTemplate.clone());
   }
+  function fillScreen(slot){
+    while (slot.screen.children.length) slot.screen.remove(slot.screen.children[0]);
+    if (!screenTemplate) screenTemplate = makeScreen();
+    slot.screen.add(screenTemplate.clone());
+  }
+  function rebuildScreen(){
+    screenCalc();
+    if (screenTemplate) disposeDeep(screenTemplate);
+    screenTemplate = makeScreen();
+    for (var i=0;i<MAX;i++) if (slots[i].kind === 'S'){ fillScreen(slots[i]); updateTag(slots[i]); }
+    screenLegend();
+  }
   function rebuildCase(){
     if (caseTemplate) disposeDeep(caseTemplate);
     caseTemplate = makeCase();
@@ -1180,13 +1312,15 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
   function setKind(slot, k){
     var was = slot.kind;
     slot.kind = k;
-    var isCase = (k === 'V');
-    slot.frame.visible = !isCase;
-    slot.plate.visible = !isCase && plateOn;
-    slot.plateB.visible = !isCase && plateOn && mode === 'facing';
+    var isCase = (k === 'V'), isScreen = (k === 'S'), isFrame = !isCase && !isScreen;
+    slot.frame.visible = isFrame;
+    slot.plate.visible = isFrame && plateOn;
+    slot.plateB.visible = isFrame && plateOn && mode === 'facing';
     slot.holder.visible = isCase;
+    slot.screen.visible = isScreen;
+    if (isScreen && was !== 'S') fillScreen(slot);
     placeEye(slot);
-    if (!isCase){
+    if (isFrame){
       slot.frame.geometry = GEO[k].marco;
       slot.plate.geometry = GEO[k].placa;
       slot.plateB.geometry = GEO[k].placaB;
@@ -1430,9 +1564,14 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
   }
 
   // width and bounding box per position kind
-  function widthOf(k){ return k === 'V' ? CASE.W : GEO[k].w; }
-  function depthOf(k){ return k === 'V' ? CASE.D : C.perfil_d; }
+  function widthOf(k){ return k === 'V' ? CASE.W : k === 'S' ? SCREEN.W : GEO[k].w; }
+  function depthOf(k){ return k === 'V' ? CASE.D : k === 'S' ? SCREEN.BASE_D : C.perfil_d; }
+  // de dónde arranca la cara que mira al visitante
+  function frontZ(k){ return k === 'V' ? CASE.D/2 : k === 'S' ? SCREEN.BASE_D/2 : C.perfil_d/2; }
   function boxOf(k){
+    if (k === 'S') return new THREE.Box3(
+      new THREE.Vector3(-SCREEN.W/2, FLOOR_Y, -SCREEN.BASE_D/2),
+      new THREE.Vector3( SCREEN.W/2, FLOOR_Y + screenHeight(), SCREEN.BASE_D/2));
     if (k !== 'V') return GEO[k].box;
     return new THREE.Box3(
       new THREE.Vector3(-CASE.W/2, FLOOR_Y, -CASE.D/2),
@@ -1501,7 +1640,13 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
   // A case never stands closer than CASE_MIN to a frame, so each joint gets its
   // own spacing: the slider value, or the minimum where the two kinds meet.
   var CASE_MIN = 200;
-  function mixedJoint(i){ return (kinds[i] === 'V') !== (kinds[i+1] === 'V'); }
+  // una pantalla guarda las distancias con cualquier vecino; una vitrina,
+  // con los marcos
+  function mixedJoint(i){
+    var a = kinds[i], b = kinds[i+1];
+    if (a === 'S' || b === 'S') return true;
+    return (a === 'V') !== (b === 'V');
+  }
   function minGapActive(){
     if (gap >= CASE_MIN) return false;
     for (var i=0;i<count-1;i++) if (mixedJoint(i)) return true;
@@ -1582,7 +1727,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
         var x0 = -tw/2;
         for (j2=from;j2<to;j2++){
           var w2 = widthOf(kinds[j2]);
-          var fz2 = (kinds[j2] === 'V') ? CASE.D/2 : C.perfil_d/2;
+          var fz2 = frontZ(kinds[j2]);
           var cx = x0 + w2/2;
           // la fila de atrás gira 180°, así que su eje x se invierte
           xs[j2] = r ? -cx : cx;
@@ -1603,7 +1748,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
         var ry = (i % 2 === 0) ? beta : -beta;
         w = widthOf(kinds[i]);
         var dx = Math.cos(ry), dz = -Math.sin(ry);
-        var fzA = (kinds[i] === 'V') ? CASE.D/2 : C.perfil_d/2;
+        var fzA = frontZ(kinds[i]);
         xs.push(ex + dx*w/2 - fzA*Math.sin(ry));
         zs.push(ez + dz*w/2 - fzA*Math.cos(ry));
         rys.push(ry);
@@ -1661,7 +1806,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
         var p1 = ang, p2 = ang + a, m = ang + a/2;
         var qx = R * (Math.sin(p1) + Math.sin(p2))/2;
         var qz = R * ((1 - Math.cos(p1)) + (1 - Math.cos(p2)))/2;
-        var fz = (segs[j].k === 'V') ? CASE.D/2 : C.perfil_d/2;
+        var fz = frontZ(segs[j].k);
         xs.push(qx + fz*Math.sin(m));
         zs.push(qz - fz*Math.cos(m));
         rys.push(-m);
@@ -1717,8 +1862,8 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
       btn.textContent = kinds[i];
       btn.dataset.kind = kinds[i];
       btn.disabled = !on;
-      var nameOf = {M:'Size M', L:'Size L', V:'display case'};
-      var nxt = kinds[i]==='M' ? 'L' : kinds[i]==='L' ? 'V' : 'M';
+      var nameOf = {M:'Size M', L:'Size L', V:'display case', S:'screen'};
+      var nxt = kinds[i]==='M' ? 'L' : kinds[i]==='L' ? 'V' : kinds[i]==='V' ? 'S' : 'M';
       btn.setAttribute('aria-label', 'Position ' + (i+1) + ': ' + nameOf[kinds[i]]
         + ', switch to ' + nameOf[nxt]);
     }
@@ -1746,7 +1891,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
 
     var anyPlate = false;
     for (i=0;i<MAX;i++){
-      var hasPlate = (i < count) && kinds[i] !== 'V';
+      var hasPlate = (i < count) && kinds[i] !== 'V' && kinds[i] !== 'S';
       var twoFaces = hasPlate && mode === 'facing';
       prows[i].row.hidden = !hasPlate;
       prows[i].b.row.hidden = !twoFaces;
@@ -1770,7 +1915,10 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
     // the showcase controls only matter while a V is among the positions in use
     var anyCase = false;
     for (i=0;i<count;i++) if (kinds[i] === 'V') anyCase = true;
+    hasScreen = false;
+    for (i=0;i<count;i++) if (kinds[i] === 'S') hasScreen = true;
     document.getElementById('caseSec').hidden = !anyCase;
+    document.getElementById('screenSec').hidden = !hasScreen;
     document.getElementById('curveRow').hidden = (count < 2 || mode !== 'curve');
     document.getElementById('zigRow').hidden = (count < 2 || mode !== 'accordion');
     var facing = (count > 1 && mode === 'facing');
@@ -1808,6 +1956,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
     for (var i=0;i<count;i++){
       var s = slots[i];
       if (s.kind === 'V'){ if (s.holder.visible) _hit.push(s.holder); }
+      else if (s.kind === 'S'){ if (s.screen.visible) _hit.push(s.screen); }
       else {
         if (s.plate.visible) _hit.push(s.plate);
         if (s.plateB.visible) _hit.push(s.plateB);
@@ -1997,7 +2146,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
   Array.prototype.forEach.call(slotBtns, function(b){
     b.addEventListener('click', function(){
       var i = parseInt(b.dataset.slot, 10);
-      kinds[i] = (kinds[i] === 'M') ? 'L' : (kinds[i] === 'L') ? 'V' : 'M';
+      kinds[i] = (kinds[i] === 'M') ? 'L' : (kinds[i] === 'L') ? 'V' : (kinds[i] === 'V') ? 'S' : 'M';
       applyLayout(); reframe();
     });
   });
@@ -4452,6 +4601,31 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
       caseReadout(); rebuildCase(); applyLayout(); reframe();
     });
   });
+  // ---- la pantalla: talla y altura ----
+  function screenReadout(){
+    document.getElementById('scrDims').textContent =
+      fmt(SCREEN.W) + ' × ' + fmt(SCREEN.H) + ' mm, ' + fmt(screenHeight()) + ' mm tall';
+    document.getElementById('scrHOut').textContent = fmt(SCREEN.BOT) + ' mm';
+    document.getElementById('scrNote').textContent =
+      'Image ' + fmt(SCREEN.IMG_W) + ' × ' + fmt(SCREEN.IMG_H) + ' mm. Middle of the image at ' +
+      fmt(SCREEN.BOT + SCREEN.H/2) + ' mm.';
+  }
+  var diagBtns = document.querySelectorAll('[data-diag]');
+  Array.prototype.forEach.call(diagBtns, function(b){
+    b.addEventListener('click', function(){
+      Array.prototype.forEach.call(diagBtns, function(o){
+        o.setAttribute('aria-pressed', String(o === b)); });
+      SCREEN.DIAG = parseInt(b.dataset.diag, 10);
+      rebuildScreen(); screenReadout(); applyLayout(); reframe();
+    });
+  });
+  var scrH = document.getElementById('scrH');
+  scrH.addEventListener('input', function(){
+    SCREEN.BOT = parseInt(scrH.value, 10) || SCREEN.BOT;
+    rebuildScreen(); screenReadout(); applyLayout();
+  });
+  screenReadout();
+
   var fillBtns = document.querySelectorAll('[data-fill]');
   Array.prototype.forEach.call(fillBtns, function(b){
     b.addEventListener('click', function(){
@@ -4622,9 +4796,16 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
     reframe();
   }
 
-  // A unit is its type plus the picture on its plate, so all of it moves.
+  // A unit is its type, the picture on its plate and the page written on it,
+  // so all of it travels with the unit.
   function moveUnit(from, to){
     var st = [], i, pr;
+    // the built plate texture belongs to the old position, so it is thrown away
+    function dropCache(key){
+      var e = pageCache[key];
+      if (e){ e.tex.dispose(); e.mat.dispose(); delete pageCache[key]; }
+      clearTimeout(texTimer[key]);
+    }
     function thumb(r){ return r.th.hidden ? null : r.th.src; }
     function setThumb(r, src){
       if (src){
@@ -4639,16 +4820,21 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
       pr = prows[i];
       st.push({kind:kinds[i], tex:slots[i].tex, aspect:slots[i].aspect,
                texB:slots[i].texB, aspectB:slots[i].aspectB,
-               src:thumb(pr), srcB:thumb(pr.b)});
+               src:thumb(pr), srcB:thumb(pr.b),
+               page:pages[i] || null, pageB:pages[i + MAX] || null});
     }
     st.splice(to, 0, st.splice(from, 1)[0]);
+    for (i=0;i<count;i++){ dropCache(i); dropCache(i + MAX); }
     for (i=0;i<count;i++){
       var u = st[i];
       kinds[i] = u.kind;
       slots[i].tex = u.tex; slots[i].aspect = u.aspect;
       slots[i].texB = u.texB; slots[i].aspectB = u.aspectB;
       setThumb(prows[i], u.src); setThumb(prows[i].b, u.srcB);
+      if (u.page) pages[i] = u.page; else delete pages[i];
+      if (u.pageB) pages[i + MAX] = u.pageB; else delete pages[i + MAX];
     }
+    persist();
   }
 
   var hintEl = document.getElementById('hint');
@@ -4794,6 +4980,8 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
       if (s.matImg === mat && s.tex) return plateJPEG(s, false);
       if (s.matImgB === mat && s.texB) return plateJPEG(s, true);
     }
+    // cualquier otra textura dibujada aquí, la pantalla incluida
+    if (mat.map && mat.map.image && mat.map.image.width) return sheetJPEG(mat.map.image);
     return Promise.resolve(null);
   }
 
@@ -5084,6 +5272,11 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
     // the room is hidden behind the panel editor: no need to draw it
     if (ped && ped.open){ last = now; requestAnimationFrame(frame); return; }
     var dt = Math.min(0.05, (now-last)/1000); last = now;
+    if (hasScreen && now - vizLast > 90){
+      if (!vizT0) vizT0 = now;
+      vizLast = now;
+      drawViz((now - vizT0)/1000);
+    }
     if (goal){
       var k = Math.min(1, (now - goal.t0)/goal.ms);
       var e = k<0.5 ? 4*k*k*k : 1-Math.pow(-2*k+2,3)/2;
