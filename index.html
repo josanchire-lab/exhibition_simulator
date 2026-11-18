@@ -283,8 +283,9 @@ main{flex:1 1 auto;min-height:0;display:flex;gap:14px;align-items:stretch}
   overflow:auto;background:rgba(13,18,23,.98);color:var(--fg);
   border:1px solid var(--line);border-radius:12px;padding:40px 46px 42px;
   box-shadow:0 26px 70px rgba(0,0,0,.6);font-size:16.5px;line-height:1.62}
-.sheet h3{margin:0 0 18px;font-size:12.5px;font-weight:700;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--accent)}
+/* el titular de los dos paneles, igual que el del About: Space Grotesk, grande y blanco */
+.sheet h3{margin:0 0 18px;font-family:"Space Grotesk",system-ui,sans-serif;font-weight:700;
+  font-size:clamp(21px,2.6vw,27px);line-height:1.2;letter-spacing:0;color:var(--accent)}
 .sheet p,.sheet li{font-family:"Source Sans 3",system-ui,sans-serif;font-weight:500;
   letter-spacing:.005em}
 .sheet p{margin:0 0 13px;color:var(--fg)}
@@ -299,7 +300,7 @@ main{flex:1 1 auto;min-height:0;display:flex;gap:14px;align-items:stretch}
   border-top:1px solid var(--line-soft);color:var(--muted);font-size:14.5px}
 /* el argumentario: titular grande y apartados numerados */
 #bizBox .lead{margin:0 0 18px;font-family:"Space Grotesk",system-ui,sans-serif;font-weight:700;
-  font-size:clamp(21px,2.6vw,27px);line-height:1.2;color:var(--fg)}
+  font-size:clamp(21px,2.6vw,27px);line-height:1.2;color:var(--accent)}
 #bizBox ol{margin:26px 0 0;padding:0;list-style:none;counter-reset:biz;gap:26px}
 #bizBox ol li{position:relative;padding-left:40px}
 #bizBox ol li::before{counter-increment:biz;content:counter(biz);position:absolute;left:0;top:0;
@@ -513,12 +514,11 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
 <div id="app">
   <header>
     <h1>Exhibition simulator</h1>
-    <span class="ref">Version 4.28</span>
+    <span class="ref">Version 4.34</span>
     <button id="bizBtn" type="button" aria-expanded="false" aria-controls="bizBox">About</button>
     <div id="bizBox" role="dialog" aria-modal="true" aria-label="About" hidden>
       <div class="sheet">
         <button type="button" class="lbclose" aria-label="Close">&times;</button>
-        <h3>About</h3>
         <p class="lead">An exhibition you can walk through before it exists.</p>
         <p>Until now, presenting an exhibition before it exists has meant building it twice: first in InDesign, designing every panel, and then again in Photoshop, manually placing those designs onto photographs and adjusting scale, perspective and shadows. Every small change meant repeating the process. Meanwhile, physical layouts, dimensions and distances were often estimated on site, making it extremely time-consuming to create a reliable preview of the final result.</p>
         <ol>
@@ -548,7 +548,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
       <ol>
         <li><b>Build the row.</b> In <b>Composition</b>, set how many panels or showcases you want, then click each position to choose its type: M and L are frames of two widths, V is a showcase on legs.</li>
         <li><b>Arrange it.</b> In <b>Layout selection</b>, pick straight, curved, accordion or facing, set the spacing, and move the sliders each layout adds. <b>Builder mode</b> lets you drag the panels around instead.</li>
-        <li><b>Add content.</b> In <b>Panels content</b>, upload a picture for each plate, or tick <b>Show demo text</b> to put a sample page at real size on every panel. <b>Open panel editor</b> to write on the panels themselves: start from a layout, then add, move and resize titles, text, quotes, captions and pictures, and see where the text runs past its box. <b>Back to 3D view</b> takes you back to the room, in front of that panel.</li>
+        <li><b>Add content.</b> In <b>Panels content</b>, upload a picture for each plate, or tick <b>Show demo text</b> to put a sample page at real size on every panel. <b>Open panel editor</b>, or double-click a panel in the room, to write on the panels themselves: start from a layout, then add, move and resize titles, text, quotes, captions and pictures, and see where the text runs past its box. <b>Back to 3D view</b> takes you back to the room, in front of that panel.</li>
         <li><b>Look around.</b> Drag to orbit, shift-drag or the arrow keys to pan, scroll to zoom; Overview, Front and Top jump to set views. The <b>reading distance</b> at the bottom measures from the camera to the cross in the middle of the view, so you can tell whether a text size works from where you are standing.</li>
         <li><b>Take it away.</b> <b>Augmented Reality mode</b> opens the composition at real size on an iPhone or iPad, and <b>Export PNG</b> saves the view you are looking at.</li>
       </ol>
@@ -1988,8 +1988,16 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
   var goal = null, spin = false, current = 'conjunto', userMoved = false;
   var reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
 
+  // The camera never goes under the floor: below this angle it would be looking
+  // up at the row from underneath, which is a view nobody can stand in.
+  var CAM_FLOOR = 120;            // mm it keeps above the floor
+  function phLimit(){
+    var c = (FLOOR_Y + CAM_FLOOR - cam.t.y) / Math.max(1, cam.r);
+    return Math.max(0.06, Math.min(Math.PI-0.06, Math.acos(Math.max(-1, Math.min(1, c)))));
+  }
   function apply(){
-    var ph = Math.max(0.06, Math.min(Math.PI-0.06, cam.ph));
+    var ph = Math.max(0.06, Math.min(phLimit(), cam.ph));
+    cam.ph = ph;                  // the clamp sticks, so a drag cannot push past it
     var s = Math.sin(ph);
     camera.position.set(
       cam.t.x + cam.r*s*Math.sin(cam.th),
@@ -2071,6 +2079,9 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
     camera.matrixWorld.extractBasis(_right, _up, _fwd);
     cam.t.addScaledVector(_right, px2 * wPerPix);
     cam.t.addScaledVector(_up,    py2 * wPerPix);
+    // panning down stops at the floor instead of burying the camera under it
+    var low = FLOOR_Y + CAM_FLOOR - cam.r*Math.cos(cam.ph);
+    if (cam.t.y < low) cam.t.y = low;
     userMoved = true; goal = null;
   }
 
@@ -2092,7 +2103,7 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
     } else {
       cam.th -= dx * 0.0062;
       cam.ph -= dy * 0.0062;
-      cam.ph = Math.max(0.06, Math.min(Math.PI-0.06, cam.ph));
+      cam.ph = Math.max(0.06, Math.min(phLimit(), cam.ph));
     }
     px = e.clientX; py = e.clientY;
   });
@@ -2638,9 +2649,13 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
     });
     return true;
   }
+  var hadSaved = false;
   try {
     var saved = localStorage.getItem(STORE);
-    if (saved && loadPages(JSON.parse(saved)) && Object.keys(pages).length) loadDemo();
+    if (saved){
+      hadSaved = true;
+      if (loadPages(JSON.parse(saved)) && Object.keys(pages).length) loadDemo();
+    }
   } catch (err){}
 
   // ---- templates ----
@@ -2685,6 +2700,13 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
     var pg = {kind:k, bg:'#ffffff', blocks:bl, rev:1};
     remapPage(pg, {t:MARGIN, b:MARGIN, l:MARGIN, r:MARGIN}, PM);
     return pg;
+  }
+  // A first visit opens on three M panels, one per starting layout, so the row
+  // has something written on it from the first second. Anyone who has been here
+  // before keeps whatever they left, empty panels included.
+  if (!hadSaved){
+    ['sheet', 'text', 'image'].forEach(function(id, i){ pages[i] = template(id, 'M'); });
+    loadDemo();
   }
   // moves every block from one set of margins to another: what sits inside the
   // margins stretches with the type area, what sits in a margin keeps to it,
@@ -4683,6 +4705,23 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
     }
     return best;
   }
+  // Double-click a panel and the editor opens on that very page: the quickest
+  // way in, with no hunting for the right tab.
+  stage.addEventListener('dblclick', function(e){
+    var hit = pickUnit(e);
+    if (!hit) return;
+    var k = kinds[hit.i];
+    if (k !== 'M' && k !== 'L') return;        // showcases and screens hold no page
+    var key = hit.i, g = slots[hit.i].grp;
+    if (mode === 'facing'){                    // facing rows: the side you clicked
+      g.updateMatrixWorld(true);
+      _pInv.copy(g.matrixWorld).invert();
+      if (_pHit.copy(hit.point).applyMatrix4(_pInv).z < 0) key = hit.i + MAX;
+    }
+    if (ud) finishUnitDrag(true);
+    endDrag();
+    openEd(key);
+  });
   // where the pointer is on the horizontal plane through the grabbed point
   function planePoint(e, y){
     _pPlane.set(_pUp, -y);
@@ -4841,8 +4880,8 @@ button.primary[disabled]:hover{background:var(--accent);border-color:var(--accen
   var bannerEl = document.getElementById('builderBanner');
   function hintText(){
     hintEl.textContent = moveOn
-      ? 'Drag a unit to move it · drag the floor to orbit · shift-drag to pan · scroll to zoom'
-      : 'Drag to orbit · shift-drag or arrows to pan · scroll to zoom';
+      ? 'Drag a unit to move it · double-click one to write on it · drag the floor to orbit · shift-drag to pan'
+      : 'Drag to orbit · double-click a panel to write on it · shift-drag or arrows to pan · scroll to zoom';
     bannerEl.classList.toggle('on', moveOn);
   }
   toggle(document.getElementById('bBuilder'), function(on){
